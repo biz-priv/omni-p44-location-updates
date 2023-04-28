@@ -11,6 +11,6 @@ function:
       - "**/*"
   events:
     - http:
-        path: updates
+        path: /updates
         method: POST
         private: true
