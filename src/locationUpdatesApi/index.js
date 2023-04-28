@@ -12,7 +12,12 @@ module.exports.handler = async (event, callback) => {
     if (error) {
       throw error;
     }
-    return send_response(200, value);
+    // return send_response(200, value);
+    return {
+      locationUpdateResponse: {
+        message: "Success",
+      },
+    };
   } catch (error) {
     return callback(response("[400]", error));
   }

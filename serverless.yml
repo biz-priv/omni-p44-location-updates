@@ -15,6 +15,10 @@ provider:
     CreateBy: BizCloudExperts
     Version: "1.0"
     Environment: ${self:provider.stage}
+  environment:
+    STAGE: ${self:provider.stage}
+    REGION: ${self:provider.region}
+    SERVICE: ${self:service}
 
 plugins:
   - serverless-offline
@@ -39,3 +43,31 @@ layers:
     compatibleRuntimes:
       - nodejs14.x
     retain: false
+
+resources:
+  Resources:
+    BadRequestResponse:
+      Type: "AWS::ApiGateway::GatewayResponse"
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: ACCESS_DENIED
+        ResponseTemplates:
+          application/json: |
+            {
+              "errorDescription":"$context.authorizer.message"
+            }
+        RestApiId:
+          Ref: "ApiGatewayRestApi"
+        StatusCode: "400"
+    AuthFailureGatewayResponse:
+      Type: "AWS::ApiGateway::GatewayResponse"
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: UNAUTHORIZED
+        RestApiId:
+          Ref: "ApiGatewayRestApi"
+        StatusCode: "401"
