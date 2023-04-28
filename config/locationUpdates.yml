@@ -1,6 +1,8 @@
 function:
   name: omni-location-updates-api-${self:provider.stage}
   handler: src/locationUpdatesApi/index.handler
+  description: P44 location Updates API - ${self:provider.stage}
+  runtime: nodejs14.x
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:

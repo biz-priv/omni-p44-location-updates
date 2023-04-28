@@ -10,12 +10,23 @@ provider:
   memorySize: 256
   deploymentBucket: ${ssm:/omni-dw/${self:provider.stage}/sls/deployment/bucket}
   role: ${ssm:/omni-dw/${self:provider.stage}/lambda/role}
+  stackTags:
+    Application: P44LocationUpdates
+    CreateBy: BizCloudExperts
+    Version: "1.0"
+    Environment: ${self:provider.stage}
 
 plugins:
   - serverless-offline
 
 functions:
   locationUpdatesApi: ${file(config/locationUpdates.yml):function}
+
+custom:
+  standardResponseHeaders:
+    "Access-Control-Allow-Origin": "'*'"
+    "Access-Control-Allow-Credentials": "'true'"
+    "Access-Control-Allow-Headers": "'*'"
 
 package:
   individually: true
