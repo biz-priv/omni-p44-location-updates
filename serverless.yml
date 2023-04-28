@@ -1,0 +1,12 @@
+service: omni-p44-location-updates
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  runtime: nodejs18.x
+
+functions:
+  locationUpdatesApi: ${file(config/locationUpdates.yml):function}
+
+plugins:
+  - serverless-offline

@@ -1,0 +1,9 @@
+function:
+  name: omni-location-updates-api
+  handler: src/locationUpdatesApi/index.handler
+  events:
+    - http:
+        path: v1/location/updates
+        method: POST
+        cors: true
+        private: true
