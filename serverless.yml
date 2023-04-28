@@ -1,12 +1,30 @@
 service: omni-p44-location-updates
-frameworkVersion: "3"
 
 provider:
   name: aws
-  runtime: nodejs18.x
+  runtime: nodejs14.x
+  versionFunctions: true
+  stage: ${opt:stage, 'dev'}
+  region: us-east-1
+  timeout: 30
+  memorySize: 256
+  deploymentBucket: ${ssm:/omni-dw/${self:provider.stage}/sls/deployment/bucket}
+  role: ${ssm:/omni-dw/${self:provider.stage}/lambda/role}
+
+plugins:
+  - serverless-offline
 
 functions:
   locationUpdatesApi: ${file(config/locationUpdates.yml):function}
 
-plugins:
-  - serverless-offline
+package:
+  individually: true
+
+layers:
+  CommonLibs:
+    path: lib/nodejs
+    name: ${self:service}-layer-${self:provider.stage}
+    description: p44-location-updates-layer-${self:provider.stage}
+    compatibleRuntimes:
+      - nodejs14.x
+    retain: false

@@ -1,9 +1,14 @@
 function:
-  name: omni-location-updates-api
+  name: omni-location-updates-api-${self:provider.stage}
   handler: src/locationUpdatesApi/index.handler
+  layers:
+    - { Ref: CommonLibsLambdaLayer }
+  package:
+    include:
+      - src/locationUpdatesApi/**
+      - src/shared/**
   events:
     - http:
-        path: v1/location/updates
+        path: updates
         method: POST
-        cors: true
         private: true

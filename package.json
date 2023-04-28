@@ -11,8 +11,12 @@
     "url": "git+https://dbosebiz@github.com/bizcloud-experts/omni-p44-location-updates.git"
   },
   "dependencies": {
-    "joi": "^17.9.2",
-    "serverless-offline": "^12.0.4"
+    "joi": "^17.9.2"
+  },
+  "devDependencies": {
+    "serverless": "2.11.1",
+    "serverless-offline": "^8.8.0",
+    "serverless-plugin-log-subscription": "^2.2.0"
   },
   "keywords": [],
   "author": "",

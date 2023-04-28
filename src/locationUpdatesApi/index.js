@@ -1,4 +1,3 @@
-const { json } = require("stream/consumers");
 const { send_response } = require("../../shared/helper");
 const { locationUpdateSchema } = require("../../shared/JoiSchemas");
 
