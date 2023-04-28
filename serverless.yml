@@ -33,7 +33,7 @@ package:
 
 layers:
   CommonLibs:
-    path: lib/nodejs
+    path: lib
     name: ${self:service}-layer-${self:provider.stage}
     description: p44-location-updates-layer-${self:provider.stage}
     compatibleRuntimes:
