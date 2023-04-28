@@ -9,6 +9,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "joi": "^17.6.0"
+    "joi": "^17.9.2"
   }
 }
