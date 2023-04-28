@@ -1,5 +1,5 @@
 const { send_response } = require("../shared/helper");
-const { locationUpdateSchema } = require("../shared/JoiSchemas");
+const { locationUpdateSchema } = require("../shared/joiSchema");
 
 module.exports.handler = async (event) => {
   console.log("Event", JSON.stringify(event));
