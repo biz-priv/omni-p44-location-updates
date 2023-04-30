@@ -19,6 +19,6 @@ module.exports.handler = async (event, callback) => {
       },
     };
   } catch (error) {
-    return callback(send_response("[400]", error));
+    return send_response("[400]", error);
   }
 };
