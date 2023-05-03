@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "joi": "^17.9.2"
+    "joi": "^17.9.2",
+    "log4js": "^6.9.1",
+    "moment-timezone": "^0.5.43"
   }
 }

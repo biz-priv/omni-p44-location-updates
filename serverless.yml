@@ -10,6 +10,12 @@ provider:
   memorySize: 256
   deploymentBucket: ${ssm:/omni-dw/${self:provider.stage}/sls/deployment/bucket}
   role: ${ssm:/omni-dw/${self:provider.stage}/lambda/role}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - "logs:PutSubscriptionFilter"
+      Resource:
+        - arn:aws:logs:us-east-1:332753493246:destination:bce-logs-cw-destination-us-east-1-${self:provider.stage}
   stackTags:
     Application: P44LocationUpdates
     CreateBy: BizCloudExperts
@@ -20,8 +26,14 @@ provider:
     REGION: ${self:provider.region}
     SERVICE: ${self:service}
 
+logSubscription:
+  enabled: true
+  destinationArn: arn:aws:logs:${self:provider.region}:332753493246:destination:bce-logs-cw-destination-${self:provider.region}-${self:provider.stage}
+  filterPattern: '{$.service-name = "*"}'
+
 plugins:
   - serverless-offline
+  - serverless-plugin-log-subscription
 
 functions:
   locationUpdatesApi: ${file(config/functions/locationUpdates.yml):function}

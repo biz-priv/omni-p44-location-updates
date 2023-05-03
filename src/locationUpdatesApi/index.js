@@ -1,6 +1,7 @@
 const { query_dynamo } = require("../shared/dynamoDb");
-const { marshall, unmarshall } = require("@aws-sdk/util-dynamodb");
+const { marshall } = require("@aws-sdk/util-dynamodb");
 const { locationUpdateSchema } = require("../shared/joiSchema");
+const { log, logUtilization } = require("../shared/logger");
 const { SHIPMENT_HEADER_TABLE, CUSTOMER_MCKESSON } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
@@ -8,6 +9,7 @@ module.exports.handler = async (event, context, callback) => {
   const body = event.body;
   const housebill = body.housebill;
   const correlationId = body.correlationId;
+  log(correlationId, JSON.stringify(event), 200);
 
   try {
     try {
@@ -26,9 +28,12 @@ module.exports.handler = async (event, context, callback) => {
     };
     const shipmetData = await query_dynamo(params);
     console.log("shipmetData", JSON.stringify(shipmetData));
+    log(correlationId, JSON.stringify(shipmetData), 200);
 
     if (shipmetData.Items.length > 0) {
       const billNumber = shipmetData.Items[0].BillNo.S;
+      await logUtilization(billNumber);
+
       console.log("billNumber", billNumber);
       if (CUSTOMER_MCKESSON.includes(billNumber)) {
         return {
@@ -38,9 +43,10 @@ module.exports.handler = async (event, context, callback) => {
         };
       }
     } else {
-      return { errorMessage: "Ignored response" };
+      return callback(response("[400]", "Ignored response"));
     }
   } catch (error) {
+    log(correlationId, JSON.stringify(error), 200);
     return callback(response("[400]", error));
   }
 };

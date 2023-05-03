@@ -36,3 +36,6 @@ function:
   environment:
     SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/shipment-header/ddb.tableName~true}
     CUSTOMER_MCKESSON: ${ssm:/omni-p44-rt-updates/${self:provider.stage}/mckesson-customer/numbers}
+    FUNCTION_NAME: omni-location-updates-api-${self:provider.stage}
+    SERVICE_NAME: ${self:service}
+    APPLICATION: DataWarehouse

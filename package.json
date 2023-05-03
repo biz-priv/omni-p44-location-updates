@@ -13,7 +13,9 @@
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.325.0",
     "@aws-sdk/util-dynamodb": "^3.303.0",
-    "joi": "^17.9.2"
+    "joi": "^17.9.2",
+    "log4js": "^6.9.1",
+    "moment-timezone": "^0.5.43"
   },
   "devDependencies": {
     "serverless": "2.11.1",
