@@ -10,6 +10,7 @@ function:
       - src/locationUpdatesApi/index.js
       - src/shared/helper.js
       - src/shared/joiSchema.js
+      - src/shared/dynamoDb.js
     exclude:
       - "**/*"
   events:
