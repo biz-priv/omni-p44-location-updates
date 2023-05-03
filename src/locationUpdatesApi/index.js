@@ -7,6 +7,7 @@ module.exports.handler = async (event, context, callback) => {
   console.log("Event", JSON.stringify(event));
   const body = event.body;
   const housebill = body.housebill;
+  const correlationId = body.correlationId;
 
   try {
     try {

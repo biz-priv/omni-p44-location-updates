@@ -24,7 +24,7 @@ plugins:
   - serverless-offline
 
 functions:
-  locationUpdatesApi: ${file(config/locationUpdates.yml):function}
+  locationUpdatesApi: ${file(config/functions/locationUpdates.yml):function}
 
 custom:
   standardResponseHeaders:
@@ -71,3 +71,5 @@ resources:
         RestApiId:
           Ref: "ApiGatewayRestApi"
         StatusCode: "401"
+    LocationUpdatesP44DLQ: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesP44DLQ}
+    LocationUpdatesP44Queue: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesP44Queue}
