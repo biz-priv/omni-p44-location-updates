@@ -14,10 +14,12 @@ module.exports.handler = async (event, context, callback) => {
       },
     };
   } catch (error) {
-    console.log(error.details);
-    const err = error.details;
+    console.log(error);
 
-    return callback(response("[400]", err));
+    // console.log(error.details);
+    // const err = error.details;
+
+    return callback(response("[400]", error));
   }
 };
 
