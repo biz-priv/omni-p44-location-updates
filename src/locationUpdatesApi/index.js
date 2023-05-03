@@ -10,6 +10,7 @@ module.exports.handler = async (event, context, callback) => {
   const housebill = body.housebill;
   const correlationId = body.correlationId;
   log(correlationId, JSON.stringify(event), 200);
+  const customerIds = CUSTOMER_MCKESSON.split(",");
 
   try {
     try {
@@ -35,7 +36,7 @@ module.exports.handler = async (event, context, callback) => {
       await logUtilization(billNumber);
 
       console.log("billNumber", billNumber);
-      if (CUSTOMER_MCKESSON.includes(billNumber)) {
+      if (customerIds.includes(billNumber)) {
         return {
           locationUpdateResponse: {
             message: "Success",
