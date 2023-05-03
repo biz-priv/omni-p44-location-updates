@@ -17,7 +17,8 @@ module.exports.handler = async (event, context, callback) => {
       await locationUpdateSchema.validateAsync(body);
     } catch (error) {
       let err = error.details[0].message;
-      return { errorMessage: err };
+      err = err.replace(/"\"/g, " ");
+      return callback(response("[400]", err));
     }
     const params = {
       TableName: SHIPMENT_HEADER_TABLE,
@@ -37,15 +38,18 @@ module.exports.handler = async (event, context, callback) => {
 
       console.log("billNumber", billNumber);
       if (customerIds.includes(billNumber)) {
-        return {
-          locationUpdateResponse: {
-            message: "Success",
-          },
-        };
+        console.log("billNumber", billNumber);
       }
     } else {
-      return callback(response("[400]", "Ignored response"));
+      // return callback(response("[400]", "Ignored response"));
+      console.log("Ignored response");
     }
+    return {
+      locationUpdateResponse: {
+        message: "Success",
+        correlationId: correlationId,
+      },
+    };
   } catch (error) {
     log(correlationId, JSON.stringify(error), 200);
     return callback(response("[400]", error));

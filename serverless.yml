@@ -16,6 +16,11 @@ provider:
         - "logs:PutSubscriptionFilter"
       Resource:
         - arn:aws:logs:us-east-1:332753493246:destination:bce-logs-cw-destination-us-east-1-${self:provider.stage}
+    # - Effect: Allow
+    #   Action:
+    #     - sqs:ReceiveMessage
+    #   Resource:
+    #     - arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-dev
   stackTags:
     Application: P44LocationUpdates
     CreateBy: BizCloudExperts

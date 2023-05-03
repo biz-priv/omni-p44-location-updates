@@ -1,0 +1,25 @@
+function:
+  name: omni-p44-sqs-trigger-${self:provider.stage}
+  handler: src/sqsTrigger/index.handler
+  description: P44 location Updates SQS Trigger - ${self:provider.stage}
+  runtime: nodejs14.x
+  events:
+    - http:
+        method: GET
+        private: true
+        integration: lambda
+        response:
+          headers: ${self:custom.standardResponseHeaders}
+          statusCodes:
+            200:
+              pattern: ""
+            400:
+              pattern: '[\s\S]*\[400\][\s\S]*'
+              headers:
+                Content-Type: "'application/json'"
+              template: ${file(responseTemplate.vtl)}
+            500:
+              pattern: '[\s\S]*\[500\][\s\S]*'
+              headers:
+                Content-Type: "'application/json'"
+              template: ${file(responseTemplate.vtl)}
