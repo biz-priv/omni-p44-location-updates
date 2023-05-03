@@ -17,7 +17,7 @@ module.exports.handler = async (event, context, callback) => {
       await locationUpdateSchema.validateAsync(body);
     } catch (error) {
       let err = error.details[0].message;
-      err = err.replace(/"\"/g, " ");
+      err = err.replace(/\\/g, "").replace(/"/g, "");
       return callback(response("[400]", err));
     }
     const params = {
