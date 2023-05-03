@@ -11,6 +11,8 @@
     "url": "git+https://dbosebiz@github.com/bizcloud-experts/omni-p44-location-updates.git"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.325.0",
+    "@aws-sdk/util-dynamodb": "^3.303.0",
     "joi": "^17.9.2"
   },
   "devDependencies": {

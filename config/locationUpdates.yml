@@ -33,3 +33,6 @@ function:
               headers:
                 Content-Type: "'application/json'"
               template: ${file(responseTemplate.vtl)}
+  environment:
+    SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/shipment-header/ddb.tableName~true}
+    CUSTOMER_MCKESSON: ${ssm:/omni-p44-rt-updates/${self:provider.stage}/mckesson-customer/numbers}
