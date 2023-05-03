@@ -1,17 +1,16 @@
-const { query_dynamo } = require("../shared/dynamoDb");
-const { marshall } = require("@aws-sdk/util-dynamodb");
 const { locationUpdateSchema } = require("../shared/joiSchema");
 const { log, logUtilization } = require("../shared/logger");
-const { SHIPMENT_HEADER_TABLE, CUSTOMER_MCKESSON } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
   console.log("Event", JSON.stringify(event));
-  const body = event.body;
-  const housebill = body.housebill;
-  const correlationId = body.correlationId;
-  log(correlationId, JSON.stringify(event), 200);
-  const customerIds = CUSTOMER_MCKESSON.split(",");
 
+  const body = event.body;
+  console.log(isArray(body));
+  const correlationId = isArray(body)
+    ? body[0].correlationId
+    : body.correlationId;
+  log(correlationId, JSON.stringify(event), 200);
+  await logUtilization(correlationId);
   try {
     try {
       await locationUpdateSchema.validateAsync(body);
@@ -19,30 +18,6 @@ module.exports.handler = async (event, context, callback) => {
       let err = error.details[0].message;
       err = err.replace(/\\/g, "").replace(/"/g, "");
       return callback(response("[400]", err));
-    }
-    const params = {
-      TableName: SHIPMENT_HEADER_TABLE,
-      IndexName: "Housebill-index",
-      KeyConditionExpression: "Housebill = :pk",
-      ExpressionAttributeValues: marshall({
-        ":pk": housebill,
-      }),
-    };
-    const shipmetData = await query_dynamo(params);
-    console.log("shipmetData", JSON.stringify(shipmetData));
-    log(correlationId, JSON.stringify(shipmetData), 200);
-
-    if (shipmetData.Items.length > 0) {
-      const billNumber = shipmetData.Items[0].BillNo.S;
-      await logUtilization(billNumber);
-
-      console.log("billNumber", billNumber);
-      if (customerIds.includes(billNumber)) {
-        console.log("billNumber", billNumber);
-      }
-    } else {
-      // return callback(response("[400]", "Ignored response"));
-      console.log("Ignored response");
     }
     return {
       locationUpdateResponse: {
@@ -61,4 +36,8 @@ function response(code, message) {
     statusCode: code,
     message,
   });
+}
+
+function isArray(a) {
+  return !!a && a.constructor === Array;
 }
