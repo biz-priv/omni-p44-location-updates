@@ -1,7 +1,7 @@
 const { send_response } = require("../shared/helper");
 const { locationUpdateSchema } = require("../shared/joiSchema");
 
-module.exports.handler = async (event, context, callback) => {
+module.exports.handler = async (event) => {
   console.log("Event", JSON.stringify(event));
   const body = event.body;
 
@@ -14,12 +14,12 @@ module.exports.handler = async (event, context, callback) => {
       },
     };
   } catch (error) {
-    console.log(error);
+    console.log("Error", error);
 
     // console.log(error.details);
     // const err = error.details;
 
-    return callback(response("[400]", error));
+    return send_response(400, error);
   }
 };
 
