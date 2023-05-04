@@ -9,19 +9,15 @@ provider:
   timeout: 30
   memorySize: 256
   deploymentBucket: ${ssm:/omni-dw/${self:provider.stage}/sls/deployment/bucket}
-  role: ${ssm:/omni-dw/${self:provider.stage}/lambda/role}
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "logs:PutSubscriptionFilter"
       Resource:
         - arn:aws:logs:us-east-1:332753493246:destination:bce-logs-cw-destination-us-east-1-${self:provider.stage}
-    # - Effect: "Allow"
-    #   Action:
-    #     - "sqs:*"
-    #   Resource: "*"
     - Effect: Allow
       Action:
+        - "sqs:SendMessage"
         - "sqs:GetQueueUrl"
         - "sqs:GetQueueAttributes"
         - "sqs:ReceiveMessage"
