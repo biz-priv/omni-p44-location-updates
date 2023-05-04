@@ -12,31 +12,16 @@ LocationUpdatesP44Queue:
       deadLetterTargetArn: !GetAtt LocationUpdatesP44DLQ.Arn
       maxReceiveCount: 3
 
-  # LocationUpdatesTargetQueuePolicy:
-  #   Type: AWS::SQS::QueuePolicy
-  #   Properties:
-  #     Queues:
-  #       - !Ref LocationUpdatesP44Queue
-  #     PolicyDocument:
-  #       Version: "2012-10-17"
-  #       Statement:
-  #         - Sid: "Allow SNS publish to SQS"
-  #           Effect: Allow
-  #           Principal:
-  #             Service: "sns.amazonaws.com"
-  #           Resource: !GetAtt LocationUpdatesP44Queue.Arn
-  #           Action: SQS:SendMessage
-
-  LocationUpdatesTargetQueuePolicy:
-    Type: "AWS::SQS::QueuePolicy"
-    Properties:
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: "Allow"
-            Principal:
-              Service: "lambda.amazonaws.com"
-            Action: "sqs:SendMessage"
-            Resource: !GetAtt LocationUpdatesP44Queue.Arn
-      Queues:
-        - !Ref LocationUpdatesP44Queue
+LocationUpdatesTargetQueuePolicy:
+  Type: "AWS::SQS::QueuePolicy"
+  Properties:
+    Queues:
+      - !Ref LocationUpdatesP44Queue
+    PolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service: "lambda.amazonaws.com"
+          Action: "sqs:SendMessage"
+          Resource: !GetAtt LocationUpdatesP44Queue.Arn
