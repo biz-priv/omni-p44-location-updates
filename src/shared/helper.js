@@ -1,3 +1,6 @@
+const AWS = require("aws-sdk");
+const sqs = new AWS.SQS();
+
 function send_response(http_code, resp) {
   let responseData;
   if (resp) {
@@ -15,4 +18,16 @@ function send_response(http_code, resp) {
   };
 }
 
-module.exports = { send_response };
+async function send_message(params) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      let queueRes = await sqs.sendMessage(params).promise();
+      resolve(queueRes);
+    } catch (error) {
+      console.log("sqs push message error", error);
+      reject(error);
+    }
+  });
+}
+
+module.exports = { send_response, send_message };

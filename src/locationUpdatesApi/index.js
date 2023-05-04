@@ -1,3 +1,4 @@
+const { send_message } = require("../shared/helper");
 const { locationUpdateSchema } = require("../shared/joiSchema");
 const { log, logUtilization } = require("../shared/logger");
 
@@ -19,6 +20,14 @@ module.exports.handler = async (event, context, callback) => {
       err = err.replace(/\\/g, "").replace(/"/g, "");
       return callback(response("[400]", err));
     }
+    const params = {
+      MessageBody: JSON.stringify(body),
+      QueueUrl:
+        "https://sqs.us-east-1.amazonaws.com/332281781429/omni-p44-location-updates-queue-dev",
+    };
+    let queueRes = await send_message(params);
+    console.log("response", queueRes);
+
     return {
       locationUpdateResponse: {
         message: "Success",
