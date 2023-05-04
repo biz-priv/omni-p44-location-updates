@@ -16,6 +16,10 @@ provider:
         - "logs:PutSubscriptionFilter"
       Resource:
         - arn:aws:logs:us-east-1:332753493246:destination:bce-logs-cw-destination-us-east-1-${self:provider.stage}
+    - Effect: "Allow"
+      Action:
+        - "sqs:*"
+      Resource: "*"
     # - Effect: Allow
     #   Action:
     #     - sqs:ReceiveMessage
@@ -42,6 +46,7 @@ plugins:
 
 functions:
   locationUpdatesApi: ${file(config/functions/locationUpdates.yml):function}
+  p44PushToSqs: ${file(config/functions/p44PushToSqs.yml):function}
 
 custom:
   standardResponseHeaders:

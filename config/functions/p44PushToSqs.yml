@@ -1,0 +1,11 @@
+function:
+  name: omni-p44-push-to-sqs-${self:provider.stage}
+  handler: src/p44PushToSqs/index.handler
+  description: P44 location Updates SQS Trigger - ${self:provider.stage}
+  runtime: nodejs14.x
+  # events:
+  #   - sqs:
+  #       arn: arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-dev
+  #       batchSize: 10
+  #       maximumBatchingWindow: 60
+  #       functionResponseType: ReportBatchItemFailures
