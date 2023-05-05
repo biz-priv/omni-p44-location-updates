@@ -16,7 +16,7 @@ P44ShipmentLocationUpdates:
       - AttributeName: "UTCTimeStamp"
         KeyType: RANGE
     GlobalSecondaryIndexes:
-      - IndexName: shipment-status-${self:provider.stage}
+      - IndexName: shipment-status-index-${self:provider.stage}
         KeySchema:
           - AttributeName: ShipmentStatus
             KeyType: HASH
