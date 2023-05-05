@@ -1,6 +1,8 @@
+const { marshall } = require("@aws-sdk/util-dynamodb");
 const AWS = require("aws-sdk");
 const sqs = new AWS.SQS();
 const moment = require("moment-timezone");
+const { put_dynamo } = require("../shared/dynamoDb");
 
 const { P44_LOCATION_UPDATE_TABLE, P44_SQS_QUEUE_URL } = process.env;
 
