@@ -1,5 +1,5 @@
 function:
-  name: omni-p44-sqs-trigger-${self:provider.stage}
+  name: omni-p44-process-from-sqs-${self:provider.stage}
   handler: src/sqsTrigger/index.handler
   description: P44 location Updates SQS Trigger - ${self:provider.stage}
   runtime: nodejs14.x
