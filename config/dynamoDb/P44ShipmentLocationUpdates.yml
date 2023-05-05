@@ -8,7 +8,7 @@ P44ShipmentLocationUpdates:
         AttributeType: "S"
       - AttributeName: "UTCTimeStamp"
         AttributeType: "S"
-      - AttributeName: "UTCTimeStamp"
+      - AttributeName: "ShipmentStatus"
         AttributeType: "S"
     KeySchema:
       - AttributeName: "HouseBillNo"
