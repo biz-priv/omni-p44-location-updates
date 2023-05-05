@@ -2,7 +2,7 @@ P44ShipmentLocationUpdates:
   Type: AWS::DynamoDB::Table
   Properties:
     TableName: omni-p44-shipment-location-updates-${self:provider.stage}
-    # BillingMode: PAY_PER_REQUEST
+    BillingMode: PAY_PER_REQUEST
     AttributeDefinitions:
       - AttributeName: "HouseBillNo"
         AttributeType: "S"
@@ -20,8 +20,8 @@ P44ShipmentLocationUpdates:
             KeyType: HASH
         Projection:
           ProjectionType: ALL
-        ProvisionedThroughput:
-          ReadCapacityUnits: 1
-          WriteCapacityUnits: 1
+        # ProvisionedThroughput:
+        #   ReadCapacityUnits: 1
+        #   WriteCapacityUnits: 1
     StreamSpecification:
       StreamViewType: NEW_AND_OLD_IMAGES
