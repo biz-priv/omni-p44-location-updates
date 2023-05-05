@@ -1,14 +1,11 @@
 const AWS = require("aws-sdk");
 const sqs = new AWS.SQS();
-const moment = require("moment");
+const moment = require("moment-timezone");
+
 const { P44_LOCATION_UPDATE_TABLE, P44_SQS_QUEUE_URL } = process.env;
 
 exports.handler = async (event) => {
   console.log("event", JSON.stringify(event));
-  const insertedTimeStamp = moment
-    .tz("America/Chicago")
-    .format("YYYY:MM:DD HH:mm:ss")
-    .toString();
 
   const params = {
     QueueUrl: P44_SQS_QUEUE_URL,
@@ -33,7 +30,10 @@ exports.handler = async (event) => {
       HouseBillNo: dynamoPayload.housebill,
       UTCTimeStamp: dynamoPayload.UTCTimestamp,
       CorrelationId: dynamoPayload.correlationId,
-      InsertedTimeStamp: insertedTimeStamp,
+      InsertedTimeStamp: moment
+        .tz("America/Chicago")
+        .format("YYYY:MM:DD HH:mm:ss")
+        .toString(),
       ShipmentStatus: "In-Complete",
       latitude: dynamoPayload.location.latitude,
       longitude: dynamoPayload.location.longitude,
