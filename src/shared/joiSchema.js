@@ -8,7 +8,7 @@ const locationSchema = Joi.object({
 const objectSchema = Joi.object({
   housebill: Joi.string().required(),
   location: locationSchema.required(),
-  UTCTimestamp: Joi.string().required(),
+  UTCTimestamp: Joi.string().isoDate().required(),
   correlationId: Joi.string().required(),
 });
 

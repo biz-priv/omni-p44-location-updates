@@ -12,12 +12,17 @@ module.exports.handler = async (event, context, callback) => {
     : body.correlationId;
   log(correlationId, JSON.stringify(event), 200);
   await logUtilization(correlationId);
+
   try {
     try {
       await locationUpdateSchema.validateAsync(body);
     } catch (error) {
       let err = error.details[0].message;
       err = err.replace(/\\/g, "").replace(/"/g, "");
+
+      if (err.includes("iso")) {
+        err = err.replace("iso", "YYYY-MM-DDTHH:mm:ssZ");
+      }
       return callback(response("[400]", err));
     }
     const params = {

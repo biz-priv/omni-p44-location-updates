@@ -23,7 +23,7 @@ provider:
         - "sqs:ReceiveMessage"
         - "sqs:DeleteMessage"
       Resource:
-        - arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-dev
+        - arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-${self:provider.stage}
   stackTags:
     Application: P44LocationUpdates
     CreateBy: BizCloudExperts
