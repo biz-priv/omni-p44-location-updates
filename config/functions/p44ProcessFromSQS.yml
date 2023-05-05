@@ -9,3 +9,6 @@ function:
         batchSize: 10
         maximumBatchingWindow: 60
         functionResponseType: ReportBatchItemFailures
+  environment:
+    P44_LOCATION_UPDATE_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.table_name}
+    P44_SQS_QUEUE_URL: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/SQS.queue_url}
