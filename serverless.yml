@@ -33,6 +33,7 @@ provider:
     STAGE: ${self:provider.stage}
     REGION: ${self:provider.region}
     SERVICE: ${self:service}
+    P44_SQS_QUEUE_URL: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/SQS.queue_url}
 
 logSubscription:
   enabled: true

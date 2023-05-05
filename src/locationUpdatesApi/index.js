@@ -4,6 +4,7 @@ const { log, logUtilization } = require("../shared/logger");
 const { P44_SQS_QUEUE_URL } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
+  console.log("P44_SQS_QUEUE_URL", P44_SQS_QUEUE_URL);
   console.log("Event", JSON.stringify(event));
 
   const body = event.body;
