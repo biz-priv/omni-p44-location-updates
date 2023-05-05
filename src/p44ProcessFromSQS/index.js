@@ -2,7 +2,7 @@ const AWS = require("aws-sdk");
 const sqs = new AWS.SQS();
 
 exports.handler = async (event) => {
-  console.log("event", event);
+  console.log("event", JSON.stringify(event));
   const queueUrl =
     "https://sqs.us-east-1.amazonaws.com/332281781429/omni-p44-location-updates-queue-dev";
   const params = {
