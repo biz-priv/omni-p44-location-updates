@@ -96,4 +96,4 @@ resources:
     LocationUpdatesP44Queue: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesP44Queue}
     LocationUpdatesTargetQueuePolicy: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesTargetQueuePolicy}
 
-    P44ShipmentLocationUpdates: ${file(config/dynamoDb/P44ShipmentLocationUpdates.yaml):P44ShipmentLocationUpdates}
+    P44ShipmentLocationUpdates: ${file(config/dynamoDb/P44ShipmentLocationUpdates.yml):P44ShipmentLocationUpdates}
