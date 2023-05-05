@@ -23,6 +23,19 @@ exports.handler = async (event) => {
     } else {
       console.log("No messages received");
     }
+    // let dynamoPayload = JSON.parse(event.Records[0].body);
+    // console.log("dynamoPayload", dynamoPayload);
+
+    // dynamoPayload = marshall(dynamoPayload);
+
+    // const dynamoParams = {
+    //   TableName: TEST_DB_TABLE,
+    //   Item: dynamoPayload,
+    // };
+
+    // console.log(dynamoParams);
+    // const res = await put_dynamo(dynamoParams);
+    // console.log("res", JSON.stringify(res));
   } catch (err) {
     console.log("Error", err);
   }
