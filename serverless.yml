@@ -24,6 +24,10 @@ provider:
         - "sqs:DeleteMessage"
       Resource:
         - arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-${self:provider.stage}
+    - Effect: "Allow"
+      Action:
+        - "dynamodb:*"
+      Resource: "*"
   stackTags:
     Application: P44LocationUpdates
     CreateBy: BizCloudExperts
