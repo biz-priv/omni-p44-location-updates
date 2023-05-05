@@ -15,12 +15,12 @@ P44ShipmentLocationUpdates:
         KeyType: HASH
       - AttributeName: "UTCTimeStamp"
         KeyType: RANGE
-    GlobalSecondaryIndexes:
-      - IndexName: shipment-status-index-${self:provider.stage}
-        KeySchema:
-          - AttributeName: ShipmentStatus
-            KeyType: HASH
-        Projection:
-          ProjectionType: ALL
+    # GlobalSecondaryIndexes:
+    #   - IndexName: shipment-status-index-${self:provider.stage}
+    #     KeySchema:
+    #       - AttributeName: ShipmentStatus
+    #         KeyType: HASH
+    #     Projection:
+    #       ProjectionType: ALL
     StreamSpecification:
       StreamViewType: NEW_AND_OLD_IMAGES
