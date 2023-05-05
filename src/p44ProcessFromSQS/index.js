@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const sqs = new AWS.SQS();
+const moment = require("moment");
 
 exports.handler = async (event) => {
   console.log("event", JSON.stringify(event));
@@ -23,22 +24,31 @@ exports.handler = async (event) => {
     } else {
       console.log("No messages received");
     }
-    // let dynamoPayload = JSON.parse(event.Records[0].body);
-    // console.log("dynamoPayload", dynamoPayload);
+    let dynamoPayload = JSON.parse(event.Records[0].body);
+    console.log("dynamoPayload", dynamoPayload);
+    dynamoPayload = {
+      HouseBillNo: dynamoPayload.housebill,
+      UTCTimeStamp: dynamoPayload.UTCTimestamp,
+      CorrelationId: dynamoPayload.correlationId,
+      InsertedTimeStamp: moment
+        .tz("America/Chicago")
+        .format("YYYY:MM:DD HH:mm:ss")
+        .toString(),
+      ShipmentStatus: "In-Complete",
+      latitude: dynamoPayload.location.latitude,
+      longitude: dynamoPayload.location.longitude,
+    };
+    dynamoPayload = marshall(dynamoPayload);
 
-    // dynamoPayload = marshall(dynamoPayload);
+    const dynamoParams = {
+      TableName: TEST_DB_TABLE,
+      Item: dynamoPayload,
+    };
 
-    // const dynamoParams = {
-    //   TableName: TEST_DB_TABLE,
-    //   Item: dynamoPayload,
-    // };
-
-    // console.log(dynamoParams);
-    // const res = await put_dynamo(dynamoParams);
-    // console.log("res", JSON.stringify(res));
+    console.log(dynamoParams);
+    const res = await put_dynamo(dynamoParams);
+    console.log("res", JSON.stringify(res));
   } catch (err) {
     console.log("Error", err);
   }
-
-  return "Done";
 };
