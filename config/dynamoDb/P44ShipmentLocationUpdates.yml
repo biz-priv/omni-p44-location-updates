@@ -1,4 +1,4 @@
-ToyotaDynamoTable:
+P44ShipmentLocationUpdates:
   Type: AWS::DynamoDB::Table
   Properties:
     TableName: omni-p44-shipment-location-updates-${self:provider.stage}
