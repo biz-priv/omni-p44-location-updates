@@ -51,7 +51,6 @@ plugins:
 functions:
   locationUpdatesApi: ${file(config/functions/locationUpdates.yml):function}
   p44ProcessFromSQS: ${file(config/functions/p44ProcessFromSQS.yml):function}
-  p44ProcessFromDynamoStream: ${file(config/functions/p44ProcessFromDynamoStreams.yml):function}
 
 custom:
   standardResponseHeaders:
@@ -103,4 +102,3 @@ resources:
     LocationUpdatesTargetQueuePolicy: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesTargetQueuePolicy}
 
     P44ShipmentLocationUpdates: ${file(config/dynamoDb/P44ShipmentLocationUpdates.yml):P44ShipmentLocationUpdates}
-    P44StepFunctionStatusLocationUpdates : ${file(config/dynamoDb/P44StepFunctionStatusLocationUpdates.yml):P44StepFunctionStatusLocationUpdates}
