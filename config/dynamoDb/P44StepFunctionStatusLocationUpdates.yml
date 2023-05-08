@@ -1,0 +1,24 @@
+P44StepFunctionStatusLocationUpdates:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: omni-p44-location-sf-status-${self:provider.stage}
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: "HouseBillNo"
+        AttributeType: "S"
+      - AttributeName: "StepFunctionStatus"
+        AttributeType: "S"
+    KeySchema:
+      - AttributeName: "HouseBillNo"
+        KeyType: HASH
+      - AttributeName: "StepFunctionStatus"
+        KeyType: RANGE
+    GlobalSecondaryIndexes:
+      - IndexName: p44-sf-status-${self:provider.stage}
+        KeySchema:
+          - AttributeName: StepFunctionStatus
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+    StreamSpecification:
+      StreamViewType: NEW_IMAGE

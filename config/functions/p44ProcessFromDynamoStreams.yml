@@ -1,0 +1,12 @@
+function:
+  name: omni-p44-process-dynamo-stream-${self:provider.stage}
+  handler: src/p44ProcessFromDynamoStream/index.handler
+  description: P44 location Updates dynamo stream Trigger - ${self:provider.stage}
+  runtime: nodejs14.x
+  events:
+    - dynamodb:
+        arn: arn:aws:dynamodb:us-east-1:332281781429:table/omni-p44-shipment-location-updates-dev  #/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stream_arn
+  environment:
+    # DYNAMO_DB_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
+    # DYNAMO_DB_TABLE_ARN: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_arn}
+    # DYNAMO_DB_INDEX_KEY : ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stepFunctionStatus_index}
