@@ -10,3 +10,4 @@ function:
     # DYNAMO_DB_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
     # DYNAMO_DB_TABLE_ARN: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_arn}
     # DYNAMO_DB_INDEX_KEY : ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stepFunctionStatus_index}
+    CUSTOMER_MCKESSON: ${ssm:/omni-p44-rt-updates/${self:provider.stage}/mckesson-customer/numbers}

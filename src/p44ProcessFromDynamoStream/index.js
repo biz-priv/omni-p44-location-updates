@@ -1,10 +1,11 @@
 const AWS = require('aws-sdk');
 const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const {CUSTOMER_MCKESSON}= process.env
 
 exports.handler = async (event, context) => {
   console.log("event", JSON.stringify(event));
   try {
-    
+
     if (event.Records[0].eventName !== 'INSERT') {
         return;
     }
@@ -12,7 +13,7 @@ exports.handler = async (event, context) => {
     const houseBill = event.Records[0].dynamodb.NewImage.HouseBillNo.S;
     
     const params = {
-        TableName: 'omni-wt-rt-shipment-header-<env>',
+        TableName: 'omni-wt-rt-shipment-header-dev',
         Key: {
             BillNo: houseBill
         }
@@ -20,11 +21,11 @@ exports.handler = async (event, context) => {
     
     const response = await dynamoDB.get(params).promise();
     
-    if (response.Item.Customer !== 'Mckesson') {
+    if (response.Item.Customer !== CUSTOMER_MCKESSON) {
         return;
     }
     
-    const newTable = 'omni-p44-location-sf-status-<env>';
+    const newTable = 'omni-p44-location-sf-status-dev';
     
     const newItem = {
         HouseBillNo: houseBill,
