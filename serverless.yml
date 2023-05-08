@@ -53,7 +53,7 @@ functions:
   p44ProcessFromSQS: ${file(config/functions/p44ProcessFromSQS.yml):function}
 
 custom:
-  standardResponseHeaders:
+  standardResponseHeaders: 
     "Access-Control-Allow-Origin": "'*'"
     "Access-Control-Allow-Credentials": "'true'"
     "Access-Control-Allow-Headers": "'*'"
