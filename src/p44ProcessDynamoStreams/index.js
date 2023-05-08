@@ -1,45 +1,63 @@
-const AWS = require('aws-sdk');
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
-const { CUSTOMER_MCKESSON } = process.env
+const { marshall } = require("@aws-sdk/util-dynamodb");
+const { query_dynamo, put_dynamo } = require("../shared/dynamoDb");
+const { log, logUtilization } = require("../shared/logger");
+const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE } = process.env;
 
 module.exports.handler = async (event, context) => {
   console.log("event", JSON.stringify(event));
+  const houseBill = event.Records[0].dynamodb.NewImage.HouseBillNo.S;
+  const newTable = "omni-p44-location-sf-status-dev";
+
   try {
-
-    if (event.Records[0].eventName !== 'INSERT') {
-      return;
-    }
-
-    const houseBill = event.Records[0].dynamodb.NewImage.HouseBillNo.S;
-
     const params = {
-      TableName: process.env.SHIPMENT_HEADER_TABLE,
-      Key: {
-        BillNo: houseBill
+      TableName: SHIPMENT_HEADER_TABLE,
+      IndexName: "Housebill-index",
+      KeyConditionExpression: "Housebill = :pk",
+      ExpressionAttributeValues: marshall({
+        ":pk": houseBill,
+      }),
+    };
+
+    const shipmetData = await query_dynamo(params);
+    console.log("shipmetData", JSON.stringify(shipmetData));
+    log(correlationId, JSON.stringify(shipmetData), 200);
+
+    if (shipmetData.Items.length > 0) {
+      const billNumber = shipmetData.Items[0].BillNo.S;
+      await logUtilization(billNumber);
+
+      console.log("billNumber", billNumber);
+      if (CUSTOMER_MCKESSON.includes(billNumber)) {
+        console.log("billNumber", billNumber);
+        let dynamoPayload = {
+          HouseBillNo: houseBill,
+          StepFunctionStatus: "Yet to be Processed",
+        };
+        dynamoPayload = marshall(dynamoPayload);
+
+        const dynamoParams = {
+          TableName: newTable,
+          Item: dynamoPayload,
+        };
+
+        console.log("dynamoParams", JSON.stringify(dynamoParams));
+
+        const res = await put_dynamo(dynamoParams);
+        console.log("response", res);
       }
-    };
-
-    const response = await dynamoDB.get(params).promise();
-
-    if (response.Item.Customer !== CUSTOMER_MCKESSON) {
-      return;
+    } else {
+      console.log("Ignored response");
+      return callback(response("[400]", "Ignored response"));
     }
-
-    const newTable = 'omni-p44-location-sf-status-dev';
-
-    const newItem = {
-      HouseBillNo: houseBill,
-      StepFunctionStatus: 'Yet to be Processed'
-    };
-
-    const putParams = {
-      TableName: newTable,
-      Item: newItem
-    };
-
-    await dynamoDB.put(putParams).promise();
   } catch (error) {
     console.error(error);
-    throw error;
+    return callback(response("[400]", "Failed"));
   }
 };
+
+function response(code, message) {
+  return JSON.stringify({
+    statusCode: code,
+    message,
+  });
+}
