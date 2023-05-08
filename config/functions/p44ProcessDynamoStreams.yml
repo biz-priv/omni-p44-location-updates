@@ -3,11 +3,11 @@ function:
   handler: src/p44ProcessDynamoStreams/index.handler
   description: P44 Process From DynamoDB Streams - ${self:provider.stage}
   runtime: nodejs14.x
-  # events:
-  #   - stream:
-  #       type: dynamodb
-  #       arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.stream_arn}
-  #       filterPatterns:
-  #         - eventName: [INSERT]
+  events:
+    - stream:
+        type: dynamodb
+        arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.stream_arn}
+        filterPatterns:
+          - eventName: [INSERT]
   environment:
     SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/shipment-header/ddb.tableName~true}
