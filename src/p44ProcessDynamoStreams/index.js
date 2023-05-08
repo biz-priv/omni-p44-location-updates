@@ -6,6 +6,7 @@ const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE } = process.env;
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
   const houseBill = event.Records[0].dynamodb.NewImage.HouseBillNo.S;
+  const correlationId = event.Records[0].dynamodb.NewImage.CorrelationId.S;
   const newTable = "omni-p44-location-sf-status-dev";
 
   try {
