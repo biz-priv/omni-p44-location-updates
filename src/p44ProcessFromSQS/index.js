@@ -8,7 +8,7 @@ const { P44_LOCATION_UPDATE_TABLE, P44_SQS_QUEUE_URL } = process.env;
 
 exports.handler = async (event) => {
   console.log("event", JSON.stringify(event));
-
+  console.log("P44_LOCATION_UPDATE_TABLE");
   const params = {
     QueueUrl: P44_SQS_QUEUE_URL,
     MaxNumberOfMessages: 10,
