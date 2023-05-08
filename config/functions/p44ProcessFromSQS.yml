@@ -5,7 +5,7 @@ function:
   runtime: nodejs14.x
   events:
     - sqs:
-        arn: arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-dev
+        arn: arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-${self:provider.stage}
         batchSize: 10
         maximumBatchingWindow: 60
         functionResponseType: ReportBatchItemFailures
