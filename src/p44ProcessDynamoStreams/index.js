@@ -1,10 +1,12 @@
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo, put_dynamo } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");
+const { response } = require("../shared/helper");
 const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
+  const customerIds = CUSTOMER_MCKESSON.split(",");
   const houseBill = event.Records[0].dynamodb.NewImage.HouseBillNo.S;
   const correlationId = event.Records[0].dynamodb.NewImage.CorrelationId.S;
   const newTable = "omni-p44-location-sf-status-dev";
@@ -28,7 +30,8 @@ module.exports.handler = async (event, context, callback) => {
       await logUtilization(billNumber);
 
       console.log("billNumber", billNumber);
-      if (CUSTOMER_MCKESSON.includes(billNumber)) {
+      console.log("customerIds", customerIds);
+      if (customerIds.includes(billNumber)) {
         console.log("billNumber", billNumber);
         let dynamoPayload = {
           HouseBillNo: houseBill,
@@ -55,10 +58,3 @@ module.exports.handler = async (event, context, callback) => {
     return callback(response("[400]", "Failed"));
   }
 };
-
-function response(code, message) {
-  return JSON.stringify({
-    statusCode: code,
-    message,
-  });
-}

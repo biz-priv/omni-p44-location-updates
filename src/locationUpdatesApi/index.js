@@ -1,4 +1,4 @@
-const { send_message } = require("../shared/helper");
+const { send_message, response } = require("../shared/helper");
 const { locationUpdateSchema } = require("../shared/joiSchema");
 const { log, logUtilization } = require("../shared/logger");
 const { P44_SQS_QUEUE_URL } = process.env;
@@ -45,13 +45,6 @@ module.exports.handler = async (event, context, callback) => {
     return callback(response("[400]", error));
   }
 };
-
-function response(code, message) {
-  return JSON.stringify({
-    statusCode: code,
-    message,
-  });
-}
 
 function isArray(a) {
   return !!a && a.constructor === Array;

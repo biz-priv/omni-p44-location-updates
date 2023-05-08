@@ -29,5 +29,10 @@ async function send_message(params) {
     }
   });
 }
-
-module.exports = { send_response, send_message };
+function response(code, message) {
+  return JSON.stringify({
+    statusCode: code,
+    message,
+  });
+}
+module.exports = { send_response, send_message, response };
