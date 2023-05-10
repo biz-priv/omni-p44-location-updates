@@ -47,6 +47,7 @@ logSubscription:
 plugins:
   - serverless-offline
   - serverless-plugin-log-subscription
+  - serverless-step-functions
 
 functions:
   locationUpdatesApi: ${file(config/functions/locationUpdates.yml):function}
