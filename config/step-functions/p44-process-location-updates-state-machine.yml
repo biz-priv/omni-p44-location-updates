@@ -1,0 +1,15 @@
+---
+stateMachine:
+  name: omni-p44-process-location-updates-${self:provider.stage}
+  definition:
+    Comment: "Step function to process location updates"
+    StartAt: UpdateHwbStatus
+    States:
+      UpdateHwbStatus:
+        Type: Task
+        Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:omni-p44-update-hwb-status-${self:provider.stage}"
+        Next: SendEvents
+      SendEvents:
+        Type: Task
+        Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:omni-p44-send-events-${self:provider.stage}"
+        End: true
