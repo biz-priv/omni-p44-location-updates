@@ -57,9 +57,9 @@ functions:
   p44UpdatesHwbStatus: ${file(config/functions/p44UpdatesHwbStatus.yml):function}
   p44SendEvents: ${file(config/functions/p44SendEvents.yml):function}
 
-# stepFunctions:
-#   stateMachines:
-#     p44-process-location-updates-state-machine: ${file(config/stepFunctions/p44-process-location-updates-state-machine.yml):stateMachine}
+stepFunctions:
+  stateMachines:
+    p44-process-location-updates-state-machine: ${file(config/stepFunctions/p44-process-location-updates-state-machine.yml):stateMachine}
 
 custom:
   standardResponseHeaders:
