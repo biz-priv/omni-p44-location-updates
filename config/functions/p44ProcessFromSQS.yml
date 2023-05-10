@@ -3,6 +3,13 @@ function:
   handler: src/p44ProcessFromSQS/index.handler
   description: P44 Process From SQS - ${self:provider.stage}
   runtime: nodejs14.x
+  layers:
+    - { Ref: CommonLibsLambdaLayer }
+  package:
+    patterns:
+      - "!**/*"
+      - "src/p44ProcessFromSQS/index.js"
+      - "src/shared/**"
   events:
     - sqs:
         arn: arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-${self:provider.stage}
