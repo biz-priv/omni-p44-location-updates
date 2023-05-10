@@ -56,7 +56,7 @@ functions:
 
 stepFunctions:
   stateMachines:
-    p44-process-location-updates-state-machine: ${file(config/step-functions/p44-process-location-updates-state-machine.yml):stateMachine}
+    p44-process-location-updates-state-machine: ${file(config/stepFunctions/p44-process-location-updates-state-machine.yml):stateMachine}
 
 custom:
   standardResponseHeaders:
