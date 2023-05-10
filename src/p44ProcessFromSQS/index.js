@@ -21,7 +21,6 @@ exports.handler = async (event) => {
       console.log(`Received ${data.Messages.length} messages:`);
       data.Messages.forEach((message) => {
         console.log(message.Body);
-        // Do something with the message here
       });
     } else {
       console.log("No messages received");
