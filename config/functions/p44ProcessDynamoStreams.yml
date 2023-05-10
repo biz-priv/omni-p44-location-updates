@@ -1,3 +1,4 @@
+---
 function:
   name: omni-p44-process-dynamo-streams-${self:provider.stage}
   handler: src/p44ProcessDynamoStreams/index.handler

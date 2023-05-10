@@ -1,3 +1,4 @@
+---
 stateMachine:
   name: omni-p44-process-location-updates-${self:provider.stage}
   definition:
