@@ -2,14 +2,13 @@ const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo, put_dynamo } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
-const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE,TABLE_NAME } = process.env;
+const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, TABLE_NAME } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
   const customerIds = CUSTOMER_MCKESSON.split(",");
   const houseBill = event.Records[0].dynamodb.NewImage.HouseBillNo.S;
   const correlationId = event.Records[0].dynamodb.NewImage.CorrelationId.S;
-  const newTable = TABLE_NAME;
 
   try {
     const params = {
@@ -40,7 +39,7 @@ module.exports.handler = async (event, context, callback) => {
         dynamoPayload = marshall(dynamoPayload);
 
         const dynamoParams = {
-          TableName: newTable,
+          TableName: TABLE_NAME,
           Item: dynamoPayload,
         };
 
