@@ -1,3 +1,4 @@
+---
 function:
   name: omni-p44-process-from-sqs-${self:provider.stage}
   handler: src/p44ProcessFromSQS/index.handler

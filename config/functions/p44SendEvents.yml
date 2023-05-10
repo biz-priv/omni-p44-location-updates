@@ -1,0 +1,19 @@
+---
+function:
+  name: omni-p44-send-events-${self:provider.stage}
+  handler: src/p44SendEvents/index.handler
+  description: P44 send events to endpoint - ${self:provider.stage}
+  runtime: nodejs14.x
+  memorySize: 2048
+  timeout: 900
+  layers:
+    - { Ref: CommonLibsLambdaLayer }
+  package:
+    include:
+      - "src/p44SendEvents/index.js"
+      - "src/shared/**"
+    exclude:
+      - "**/*"
+  environment:
+    TABLE_NAME: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
+    TABLE_INDEX_KEY: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stepFunctionStatus_index}

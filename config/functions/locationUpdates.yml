@@ -1,3 +1,4 @@
+---
 function:
   name: omni-location-updates-api-${self:provider.stage}
   handler: src/locationUpdatesApi/index.handler

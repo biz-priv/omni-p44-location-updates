@@ -1,3 +1,4 @@
+---
 function:
   name: omni-p44-process-ddb-sf-status-${self:provider.stage}
   handler: src/p44ProcessSfStatus/index.handler
