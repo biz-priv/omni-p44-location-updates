@@ -20,6 +20,7 @@ async function startP44LocationStepFn() {
       console.log("P44 process updates location API started");
       resolve(true);
     } catch (error) {
+      console.log("Error", error);
       console.log("P44 process updates location API failed ");
       resolve(false);
     }

@@ -28,6 +28,14 @@ provider:
       Action:
         - "dynamodb:*"
       Resource: "*"
+    - Effect: Allow
+      Action:
+        - states:*
+      Resource: "*"
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+      Resource: "arn:aws:lambda:us-east-1:332281781429:function:omni-p44-process-ddb-sf-status-dev"
   stackTags:
     Application: P44LocationUpdates
     CreateBy: BizCloudExperts
