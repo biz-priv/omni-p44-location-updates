@@ -3,8 +3,12 @@ stateMachine:
   name: omni-p44-process-location-updates-${self:provider.stage}
   definition:
     Comment: "Step function to process location updates"
-    StartAt: SendEvents
+    StartAt: PublishEvents
     States:
+      PublishEvents:
+        Type: Task
+        Resource: "arn:aws:lambda:us-east-1:332281781429:function:omni-p44-update-hwb-status-dev"
+        Next: SendEvents
       SendEvents:
         Type: Task
         Resource: "arn:aws:lambda:us-east-1:332281781429:function:omni-p44-send-events-dev"
