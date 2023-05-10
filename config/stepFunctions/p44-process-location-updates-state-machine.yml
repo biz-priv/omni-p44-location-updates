@@ -12,3 +12,5 @@ stateMachine:
         Type: Task
         Resource: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:omni-p44-send-events-${self:provider.stage}"
         End: true
+      SuccessState:
+        Type: Succeed
