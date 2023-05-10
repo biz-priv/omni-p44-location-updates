@@ -5,8 +5,9 @@ const { P44_LOCATION_UPDATE_TABLE, TABLE_NAME } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
+  const stepEvent = JSON.parse(event);
   try {
-    let dynamoPayload = JSON.parse(event.Records[0].body);
+    let dynamoPayload = JSON.parse(stepEvent.Records[0].body);
     dynamoPayload = {
       HouseBillNo: dynamoPayload.housebill,
       UTCTimeStamp: dynamoPayload.UTCTimestamp,

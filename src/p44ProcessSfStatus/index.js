@@ -6,7 +6,9 @@ module.exports.handler = async (event, context, callback) => {
   await startP44LocationStepFn(event);
 };
 
-async function startP44LocationStepFn({ event }) {
+async function startP44LocationStepFn(event) {
+  console.log("event", event);
+
   return new Promise(async (resolve, reject) => {
     try {
       const params = {
@@ -16,6 +18,7 @@ async function startP44LocationStepFn({ event }) {
       };
 
       const response = await stepfunctions.startExecution(params).promise();
+
       console.log("Response", response);
       console.log("P44 process updates location API started");
       resolve(true);
