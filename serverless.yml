@@ -55,9 +55,9 @@ functions:
   p44ProcessDynamoStreams: ${file(config/functions/p44ProcessDynamoStreams.yml):function}
   p44ProcessSfStatus: ${file(config/functions/p44ProcessSfStatus.yml):function}
 
-stepFunctions:
-  stateMachines:
-    p44-process-location-updates-state-machine: ${file(config/stepFunctions/p44-process-location-updates-state-machine.yml):stateMachine}
+# stepFunctions:
+#   stateMachines:
+#     p44-process-location-updates-state-machine: ${file(config/stepFunctions/p44-process-location-updates-state-machine.yml):stateMachine}
 
 custom:
   standardResponseHeaders:
