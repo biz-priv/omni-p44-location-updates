@@ -3,7 +3,9 @@ const stepfunctions = new AWS.StepFunctions();
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
-  await startP44LocationStepFn(event);
+  if (event.Records[0].eventName === "INSERT") {
+    await startP44LocationStepFn(event);
+  }
 };
 
 async function startP44LocationStepFn(event) {
