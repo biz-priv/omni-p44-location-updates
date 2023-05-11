@@ -6,7 +6,7 @@ function:
   runtime: nodejs14.x
   memorySize: 2048
   timeout: 900
-    layers:
+  layers:
     - { Ref: CommonLibsLambdaLayer }
   package:
     include:
