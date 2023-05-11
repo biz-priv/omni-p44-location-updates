@@ -17,8 +17,13 @@ module.exports.handler = async (event, context, callback) => {
     let newImage = stepEvent.Records[0].dynamodb.NewImage;
     let keys = stepEvent.Records[0].dynamodb.Keys;
     const houseBill = keys.HouseBillNo.S;
-    const status = keys.StepFunctionStatus.S;
-    console.log(status, houseBill);
+    const sfStatus = keys.StepFunctionStatus.S;
+    let locationStatus =
+      keys.StepFunctionStatus.S === "Yet To be Processed"
+        ? "In-Complete"
+        : "Yet To be Processed";
+
+    console.log(sfStatus, houseBill);
 
     let sfDynamoPayload = {
       HouseBillNo: houseBill,
@@ -30,7 +35,7 @@ module.exports.handler = async (event, context, callback) => {
       TableName: P44_SF_STATUS_TABLE,
       Key: {
         HouseBillNo: { S: houseBill },
-        StepFunctionStatus: { S: status },
+        StepFunctionStatus: { S: sfStatus },
       },
     };
     const sfParams = {
@@ -44,7 +49,7 @@ module.exports.handler = async (event, context, callback) => {
       KeyConditionExpression: "ShipmentStatus = :pk",
       FilterExpression: "HouseBillNo = :val",
       ExpressionAttributeValues: marshall({
-        ":pk": status,
+        ":pk": locationStatus,
         ":val": houseBill,
       }),
     };
