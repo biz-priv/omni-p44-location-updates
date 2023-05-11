@@ -5,6 +5,7 @@ const {
   update_dynamo_item,
   query_dynamo,
 } = require("../shared/dynamoDb");
+const { marshall } = require("@aws-sdk/util-dynamodb");
 const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
@@ -40,11 +41,11 @@ module.exports.handler = async (event, context, callback) => {
     const params = {
       TableName: P44_LOCATION_UPDATE_TABLE,
       IndexName: "shipment-status-index-dev",
-      KeyConditionExpression: "ShipmentStatus  = :pk",
-      FilterExpression: "ship_date equal to :val",
+      KeyConditionExpression: "ShipmentStatus = :pk",
+      FilterExpression: "HouseBillNo = :val",
       ExpressionAttributeValues: marshall({
-        ":pk": houseBill,
-        ":val": status,
+        ":pk": status,
+        ":val": houseBill,
       }),
     };
 
