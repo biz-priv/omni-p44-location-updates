@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const sqs = new AWS.SQS();
+const axios = require("axios");
 
 function send_response(http_code, resp) {
   let responseData;
@@ -35,4 +36,17 @@ function response(code, message) {
     message,
   });
 }
-module.exports = { send_response, send_message, response };
+
+async function requester(options) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const data = await axios(options);
+      resolve(data);
+    } catch (err) {
+      console.log("error", err);
+      reject({ error: err.message });
+    }
+  });
+}
+
+module.exports = { send_response, send_message, response, requester };

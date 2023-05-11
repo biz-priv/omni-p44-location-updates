@@ -56,7 +56,8 @@ module.exports.handler = async (event, context, callback) => {
 
     const locationData = await query_dynamo(params);
     console.log("locationData", JSON.stringify(locationData));
-    const utcTimeStamp = locationData.Items.UTCTimeStamp.S;
+    const utcTimeStamp = locationData.Items[0].UTCTimeStamp.S;
+    console.log("utcTimeStamp", utcTimeStamp);
     //--------------------------------------------------------------------------------------------->
 
     const locationParams = {
@@ -84,6 +85,7 @@ module.exports.handler = async (event, context, callback) => {
       "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
       locationResp
     );
+    return { houseBill };
   } catch (error) {
     console.log("Error", error);
     return callback(response("[400]", "First Lambda Failed"));
