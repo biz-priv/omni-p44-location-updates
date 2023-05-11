@@ -4,8 +4,8 @@ function:
   handler: src/p44ProcessFromSQS/index.handler
   description: P44 Process From SQS - ${self:provider.stage}
   runtime: nodejs14.x
-  memorySize: 2048
-  timeout: 900
+  # memorySize: 2048
+  # timeout: 900
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:
