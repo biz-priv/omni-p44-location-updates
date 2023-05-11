@@ -1,27 +1,46 @@
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const { response } = require("../shared/helper");
-const { put_dynamo } = require("../shared/dynamoDb");
-const { P44_LOCATION_UPDATE_TABLE, TABLE_NAME } = process.env;
+const { update_dynamo } = require("../shared/dynamoDb");
+const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
-  const stepEvent = JSON.parse(event);
+  console.log("event==>", typeof event);
+  const stepEvent = event;
+
   try {
-    let dynamoPayload = JSON.parse(stepEvent.Records[0].body);
-    dynamoPayload = {
-      HouseBillNo: dynamoPayload.housebill,
-      UTCTimeStamp: dynamoPayload.UTCTimestamp,
+    let newImage = stepEvent.Records[0].dynamodb.NewImage;
+
+    const sfParams = {
+      TableName: P44_SF_STATUS_TABLE,
+      Key: { HouseBillNo: { S: newImage.HouseBillNo.S } },
+      UpdateExpression: "SET #attr = :val",
+      ExpressionAttributeNames: { "#attr": "StepFunctionStatus" },
+      ExpressionAttributeValues: {
+        ":val": { S: "Pending" },
+      },
     };
-    dynamoPayload = marshall(dynamoPayload);
-    console.log("dynamoPayload", dynamoPayload);
+    const locationParams = {
+      TableName: P44_LOCATION_UPDATE_TABLE,
+      Key: { HouseBillNo: { S: newImage.HouseBillNo.S } },
+      UpdateExpression: "SET #attr = :val",
+      ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
+      ExpressionAttributeValues: {
+        ":val": { S: "Pending" },
+      },
+    };
 
-    // const dynamoParams = {
-    //   TableName: P44_LOCATION_UPDATE_TABLE,
-    //   Item: dynamoPayload,
-    // };
+    console.log("sfParams", sfParams);
+    console.log("locationParams", locationParams);
 
-    // console.log(dynamoParams);
-    // const res = await put_dynamo(dynamoParams);
+    const sfResp = await update_dynamo(sfParams);
+    console.log("Udated SuccessFully in P44_SF_STATUS_TABLE", sfResp);
+
+    const locationResp = await update_dynamo(locationParams);
+    console.log(
+      "Udated SuccessFully in P44_LOCATION_UPDATE_TABLE",
+      locationResp
+    );
   } catch (error) {
     console.log("Error", error);
     return callback(response("[400]", "First Lambda Failed"));

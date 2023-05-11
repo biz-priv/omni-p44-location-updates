@@ -23,7 +23,7 @@ function:
   environment:
     SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/shipment-header/ddb.tableName~true}
     CUSTOMER_MCKESSON: ${ssm:/omni-p44-rt-updates/${self:provider.stage}/mckesson-customer/numbers}
-    TABLE_NAME: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
+    P44_SF_STATUS_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
     TABLE_ARN: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_arn}
     STREAM_ARN: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stream_arn}
     TABLE_INDEX_KEY: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stepFunctionStatus_index}

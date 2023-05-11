@@ -2,7 +2,8 @@ const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo, put_dynamo } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
-const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, TABLE_NAME } = process.env;
+const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE } =
+  process.env;
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -39,7 +40,7 @@ module.exports.handler = async (event, context, callback) => {
         dynamoPayload = marshall(dynamoPayload);
 
         const dynamoParams = {
-          TableName: TABLE_NAME,
+          TableName: P44_SF_STATUS_TABLE,
           Item: dynamoPayload,
         };
 
