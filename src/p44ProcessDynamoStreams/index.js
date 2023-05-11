@@ -8,55 +8,60 @@ const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE } =
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
   const customerIds = CUSTOMER_MCKESSON.split(",");
-  const houseBill = event.Records[0].dynamodb.NewImage.HouseBillNo.S;
-  console.log("houseBill", houseBill);
-  const correlationId = event.Records[0].dynamodb.NewImage.CorrelationId.S;
-  if (event.Records[0].eventName === "INSERT") {
-    try {
-      const params = {
-        TableName: SHIPMENT_HEADER_TABLE,
-        IndexName: "Housebill-index",
-        KeyConditionExpression: "Housebill = :pk",
-        ExpressionAttributeValues: marshall({
-          ":pk": houseBill,
-        }),
-      };
+  const record = event.Records;
 
-      const shipmetData = await query_dynamo(params);
-      console.log("shipmetData", JSON.stringify(shipmetData));
-      log(correlationId, JSON.stringify(shipmetData), 200);
+  for (let index = 0; index < record.length; index++) {
+    const houseBill = event.Records[i].dynamodb.NewImage.HouseBillNo.S;
+    const correlationId = event.Records[i].dynamodb.NewImage.CorrelationId.S;
+    console.log("houseBill", houseBill);
 
-      if (shipmetData.Items.length > 0) {
-        const billNumber = shipmetData.Items[0].BillNo.S;
-        await logUtilization(billNumber);
+    if (event.Records[i].eventName === "INSERT") {
+      try {
+        const params = {
+          TableName: SHIPMENT_HEADER_TABLE,
+          IndexName: "Housebill-index",
+          KeyConditionExpression: "Housebill = :pk",
+          ExpressionAttributeValues: marshall({
+            ":pk": houseBill,
+          }),
+        };
 
-        console.log("billNumber", billNumber);
-        console.log("customerIds", customerIds);
-        if (customerIds.includes(billNumber)) {
+        const shipmetData = await query_dynamo(params);
+        console.log("shipmetData", JSON.stringify(shipmetData));
+        log(correlationId, JSON.stringify(shipmetData), 200);
+
+        if (shipmetData.Items.length > 0) {
+          const billNumber = shipmetData.Items[0].BillNo.S;
+          await logUtilization(billNumber);
+
           console.log("billNumber", billNumber);
-          let dynamoPayload = {
-            HouseBillNo: houseBill,
-            StepFunctionStatus: "Yet to be Processed",
-          };
-          dynamoPayload = marshall(dynamoPayload);
+          console.log("customerIds", customerIds);
+          if (customerIds.includes(billNumber)) {
+            console.log("billNumber", billNumber);
+            let dynamoPayload = {
+              HouseBillNo: houseBill,
+              StepFunctionStatus: "Yet to be Processed",
+            };
+            dynamoPayload = marshall(dynamoPayload);
 
-          const dynamoParams = {
-            TableName: P44_SF_STATUS_TABLE,
-            Item: dynamoPayload,
-          };
+            const dynamoParams = {
+              TableName: P44_SF_STATUS_TABLE,
+              Item: dynamoPayload,
+            };
 
-          console.log("dynamoParams", JSON.stringify(dynamoParams));
+            console.log("dynamoParams", JSON.stringify(dynamoParams));
 
-          const res = await put_dynamo(dynamoParams);
-          console.log("response", res);
+            const res = await put_dynamo(dynamoParams);
+            console.log("response", res);
+          }
+        } else {
+          console.log("Ignored response");
+          // return callback(response("[400]", "Ignored response"));
         }
-      } else {
-        console.log("Ignored response");
-        return callback(response("[400]", "Ignored response"));
+      } catch (error) {
+        console.error(error);
+        return callback(response("[400]", "Failed"));
       }
-    } catch (error) {
-      console.error(error);
-      return callback(response("[400]", "Failed"));
     }
   }
 };
