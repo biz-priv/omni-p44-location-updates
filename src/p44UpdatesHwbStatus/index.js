@@ -55,35 +55,35 @@ module.exports.handler = async (event, context, callback) => {
     };
 
     const locationData = await query_dynamo(params);
-    console.log("locationData", locationData);
-    // const utcTimeStamp = locationData;
+    console.log("locationData", JSON.stringify(locationData));
+    const utcTimeStamp = locationData.Items.UTCTimeStamp.S;
     //--------------------------------------------------------------------------------------------->
 
-    // const locationParams = {
-    //   TableName: P44_LOCATION_UPDATE_TABLE,
-    //   Key: {
-    //     HouseBillNo: { S: houseBill },
-    //     UTCTimeStamp: { S: utcTimeStamp },
-    //   },
-    //   UpdateExpression: "SET #attr = :val",
-    //   ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
-    //   ExpressionAttributeValues: {
-    //     ":val": { S: "Pending" },
-    //   },
-    // };
+    const locationParams = {
+      TableName: P44_LOCATION_UPDATE_TABLE,
+      Key: {
+        HouseBillNo: { S: houseBill },
+        UTCTimeStamp: { S: utcTimeStamp },
+      },
+      UpdateExpression: "SET #attr = :val",
+      ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
+      ExpressionAttributeValues: {
+        ":val": { S: "Pending" },
+      },
+    };
 
     console.log("sfParams", sfParams);
-    // console.log("locationParams", locationParams);
+    console.log("locationParams", locationParams);
 
     const sfDlt = await delete_dynamo_item(sfDltParams);
     const sfResp = await put_dynamo(sfParams);
     console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
 
-    // const locationResp = await update_dynamo_item(locationParams);
-    // console.log(
-    //   "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
-    //   locationResp
-    // );
+    const locationResp = await update_dynamo_item(locationParams);
+    console.log(
+      "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
+      locationResp
+    );
   } catch (error) {
     console.log("Error", error);
     return callback(response("[400]", "First Lambda Failed"));
