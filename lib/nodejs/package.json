@@ -14,6 +14,7 @@
     "moment-timezone": "^0.5.43",
     "moment": "^2.29.4",
     "@aws-sdk/client-dynamodb": "^3.325.0",
-    "@aws-sdk/util-dynamodb": "^3.303.0"
+    "@aws-sdk/util-dynamodb": "^3.303.0",
+    "axios": "^1.4.0"
   }
 }

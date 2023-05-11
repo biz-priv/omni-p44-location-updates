@@ -19,7 +19,7 @@ module.exports.handler = async (event, context, callback) => {
     const houseBill = keys.HouseBillNo.S;
     const sfStatus = keys.StepFunctionStatus.S;
     let locationStatus =
-      keys.StepFunctionStatus.S === "Yet To be Processed"
+      keys.StepFunctionStatus.S === "Yet to be Processed"
         ? "In-Complete"
         : "Yet To be Processed";
 
