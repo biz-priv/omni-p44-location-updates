@@ -60,7 +60,7 @@ plugins:
 
 functions:
   locationUpdatesApi: ${file(config/functions/locationUpdates.yml):function}
-  # p44ProcessFromSQS: ${file(config/functions/p44ProcessFromSQS.yml):function}
+  p44ProcessFromSQS: ${file(config/functions/p44ProcessFromSQS.yml):function}
   p44ProcessDynamoStreams: ${file(config/functions/p44ProcessDynamoStreams.yml):function}
   p44ProcessSfStatus: ${file(config/functions/p44ProcessSfStatus.yml):function}
   p44UpdatesHwbStatus: ${file(config/functions/p44UpdatesHwbStatus.yml):function}
