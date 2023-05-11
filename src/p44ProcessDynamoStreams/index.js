@@ -9,6 +9,7 @@ module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
   const customerIds = CUSTOMER_MCKESSON.split(",");
   const houseBill = event.Records[0].dynamodb.NewImage.HouseBillNo.S;
+  console.log("houseBill", houseBill);
   const correlationId = event.Records[0].dynamodb.NewImage.CorrelationId.S;
   if (event.Records[0].eventName === "INSERT") {
     try {
