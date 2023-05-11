@@ -13,16 +13,23 @@ module.exports.handler = async (event, context, callback) => {
 
     const sfParams = {
       TableName: P44_SF_STATUS_TABLE,
-      Key: { HouseBillNo: { S: newImage.HouseBillNo.S } },
+      Key: {
+        HouseBillNo: { S: newImage.HouseBillNo.S },
+        StepFunctionStatus: { S: newImage.StepFunctionStatus.S },
+      },
       UpdateExpression: "SET #attr = :val",
       ExpressionAttributeNames: { "#attr": "StepFunctionStatus" },
       ExpressionAttributeValues: {
         ":val": { S: "Pending" },
       },
     };
+
     const locationParams = {
       TableName: P44_LOCATION_UPDATE_TABLE,
-      Key: { HouseBillNo: { S: newImage.HouseBillNo.S } },
+      IndexName: "shipment-status-index-dev",
+      Key: {
+        ShipmentStatus: { S: newImage.StepFunctionStatus.S },
+      },
       UpdateExpression: "SET #attr = :val",
       ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
       ExpressionAttributeValues: {
