@@ -18,8 +18,8 @@ function:
     - stream:
         type: dynamodb
         arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.stream_arn}
-        filterPatterns:
-          - eventName: [INSERT]
+        # filterPatterns:
+        #   - eventName: [INSERT]
   environment:
     SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/shipment-header/ddb.tableName~true}
     P44_SF_STATUS_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
