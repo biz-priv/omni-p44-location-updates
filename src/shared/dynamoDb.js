@@ -5,6 +5,7 @@ const {
   QueryCommand,
   PutItemCommand,
   UpdateItemCommand,
+  DeleteItemCommand,
 } = require("@aws-sdk/client-dynamodb");
 
 const ddb_client = new DynamoDBClient();
@@ -33,7 +34,7 @@ async function put_dynamo(params) {
   });
 }
 
-async function update_dynamo(params) {
+async function update_dynamo_item(params) {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await ddb_client.send(new UpdateItemCommand(params));
@@ -45,7 +46,24 @@ async function update_dynamo(params) {
   });
 }
 
-module.exports = { query_dynamo, put_dynamo, update_dynamo };
+async function delete_dynamo_item(params) {
+  return new Promise(async (resolve, reject) => {
+    try {
+      const res = await ddb_client.send(new DeleteItemCommand(params));
+      resolve(res);
+    } catch (error) {
+      console.log(error);
+      reject(error);
+    }
+  });
+}
+
+module.exports = {
+  query_dynamo,
+  put_dynamo,
+  update_dynamo_item,
+  delete_dynamo_item,
+};
 
 // const params = {
 //   TableName: "MyTable",
