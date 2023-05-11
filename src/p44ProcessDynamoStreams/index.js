@@ -10,7 +10,7 @@ module.exports.handler = async (event, context, callback) => {
   const customerIds = CUSTOMER_MCKESSON.split(",");
   const record = event.Records;
 
-  for (let index = 0; index < record.length; index++) {
+  for (let i = 0; i < record.length; i++) {
     const houseBill = event.Records[i].dynamodb.NewImage.HouseBillNo.S;
     const correlationId = event.Records[i].dynamodb.NewImage.CorrelationId.S;
     console.log("houseBill", houseBill);
