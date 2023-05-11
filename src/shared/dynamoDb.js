@@ -50,6 +50,7 @@ async function delete_dynamo_item(params) {
   return new Promise(async (resolve, reject) => {
     try {
       const res = await ddb_client.send(new DeleteItemCommand(params));
+      console.log("Item Deleted");
       resolve(res);
     } catch (error) {
       console.log(error);
