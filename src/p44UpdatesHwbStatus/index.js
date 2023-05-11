@@ -1,7 +1,9 @@
 const { response } = require("../shared/helper");
 const {
-  update_dynamo_item,
+  put_dynamo,
   delete_dynamo_item,
+  update_dynamo_item,
+  query_dynamo,
 } = require("../shared/dynamoDb");
 const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE } = process.env;
 
@@ -13,44 +15,49 @@ module.exports.handler = async (event, context, callback) => {
   try {
     let newImage = stepEvent.Records[0].dynamodb.NewImage;
     let keys = stepEvent.Records[0].dynamodb.Keys;
-    console.log(keys.StepFunctionStatus.S, keys.HouseBillNo.S);
+    const houseBill = keys.HouseBillNo.S;
+    const status = keys.StepFunctionStatus.S;
+    console.log(status, houseBill);
+
+    let sfDynamoPayload = {
+      HouseBillNo: houseBill,
+      StepFunctionStatus: "Pending",
+    };
+    sfDynamoPayload = marshall(sfDynamoPayload);
 
     const sfDltParams = {
       TableName: P44_SF_STATUS_TABLE,
       Key: {
-        HouseBillNo: { S: keys.HouseBillNo.S },
-        StepFunctionStatus: { S: keys.StepFunctionStatus.S },
+        HouseBillNo: { S: houseBill },
+        StepFunctionStatus: { S: status },
       },
     };
-    // const sfParams = {
-    //   TableName: P44_SF_STATUS_TABLE,
-    //   Key: {
-    //     HouseBillNo: { S: keys.HouseBillNo.S },
-    //     StepFunctionStatus: { S: keys.StepFunctionStatus.S },
-    //   },
-    //   UpdateExpression: "SET #attr = :val",
-    //   ExpressionAttributeNames: { "#attr": "StepFunctionStatus" },
-    //   ExpressionAttributeValues: {
-    //     ":val": { S: "Pending" },
-    //   },
-    // };
+    const sfParams = {
+      TableName: P44_SF_STATUS_TABLE,
+      Item: sfDynamoPayload,
+    };
+    //--------------------------------------------------------------------------------------------->
+    const params = {
+      TableName: P44_LOCATION_UPDATE_TABLE,
+      IndexName: "shipment-status-index-dev",
+      KeyConditionExpression: "ShipmentStatus  = :pk",
+      FilterExpression: "ship_date equal to :val",
+      ExpressionAttributeValues: marshall({
+        ":pk": houseBill,
+        ":val": status,
+      }),
+    };
 
-    // const locationDltParams = {
-    //   TableName: P44_LOCATION_UPDATE_TABLE,
-    //   IndexName: "shipment-status-index-dev",
-    //   Key: {
-    //     ShipmentStatus: { S: keys.StepFunctionStatus.S },
-    //   },
-    //   ConditionExpression: "ShipmentStatus = :value",
-    //   ExpressionAttributeValues: {
-    //     ":value": { S: "Yet to be Processed" },
-    //   },
-    // };
+    const locationData = await query_dynamo(params);
+    console.log("locationData", locationData);
+    // const utcTimeStamp = locationData;
+    //--------------------------------------------------------------------------------------------->
+
     // const locationParams = {
     //   TableName: P44_LOCATION_UPDATE_TABLE,
-    //   IndexName: "shipment-status-index-dev",
     //   Key: {
-    //     ShipmentStatus: { S: keys.StepFunctionStatus.S },
+    //     HouseBillNo: { S: houseBill },
+    //     UTCTimeStamp: { S: utcTimeStamp },
     //   },
     //   UpdateExpression: "SET #attr = :val",
     //   ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
@@ -59,15 +66,13 @@ module.exports.handler = async (event, context, callback) => {
     //   },
     // };
 
-    // console.log("sfParams", sfParams);
+    console.log("sfParams", sfParams);
     // console.log("locationParams", locationParams);
 
     const sfDlt = await delete_dynamo_item(sfDltParams);
-    console.log("sfDlt", sfDlt);
-    // const sfResp = await update_dynamo_item(sfParams);
-    // console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
+    const sfResp = await put_dynamo(sfParams);
+    console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
 
-    // const locationDlt = await delete_dynamo_item(locationParams);
     // const locationResp = await update_dynamo_item(locationParams);
     // console.log(
     //   "Udated Successfully in P44_LOCATION_UPDATE_TABLE",

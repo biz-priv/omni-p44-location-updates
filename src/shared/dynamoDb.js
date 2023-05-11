@@ -65,11 +65,3 @@ module.exports = {
   update_dynamo_item,
   delete_dynamo_item,
 };
-
-// const params = {
-//   TableName: "MyTable",
-//   Key: { "id": { S: "my-id" } },
-//   UpdateExpression: "SET #attr1 = :val1",
-//   ExpressionAttributeNames: { "#attr1": "myAttribute" },
-//   ExpressionAttributeValues: { ":val1": { S: "my-new-value" } }
-// };
