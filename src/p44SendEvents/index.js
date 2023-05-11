@@ -48,6 +48,6 @@ module.exports.handler = async (event, context, callback) => {
     console.log("Response Send To P44 EndPoint");
   } catch (error) {
     console.log("Error", error);
-    return callback(response("[400]", "Failed"));
+    return callback(response("[400]", "Second Lambda Failed"));
   }
 };
