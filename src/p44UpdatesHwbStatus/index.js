@@ -13,18 +13,20 @@ module.exports.handler = async (event, context, callback) => {
 
   try {
     let newImage = stepEvent.Records[0].dynamodb.NewImage;
+    let keys = stepEvent.Records[0].dynamodb.Keys;
+    console.log(keys.StepFunctionStatus.S, keys.HouseBillNo.S);
     const sfDltParams = {
       TableName: P44_SF_STATUS_TABLE,
       Key: {
-        HouseBillNo: { S: newImage.HouseBillNo.S },
-        StepFunctionStatus: { S: newImage.StepFunctionStatus.S },
+        HouseBillNo: { S: keys.HouseBillNo.S },
+        StepFunctionStatus: { S: keys.StepFunctionStatus.S },
       },
     };
     const sfParams = {
       TableName: P44_SF_STATUS_TABLE,
       Key: {
-        HouseBillNo: { S: newImage.HouseBillNo.S },
-        StepFunctionStatus: { S: newImage.StepFunctionStatus.S },
+        HouseBillNo: { S: keys.HouseBillNo.S },
+        StepFunctionStatus: { S: keys.StepFunctionStatus.S },
       },
       UpdateExpression: "SET #attr = :val",
       ExpressionAttributeNames: { "#attr": "StepFunctionStatus" },
@@ -37,7 +39,7 @@ module.exports.handler = async (event, context, callback) => {
     //   TableName: P44_LOCATION_UPDATE_TABLE,
     //   IndexName: "shipment-status-index-dev",
     //   Key: {
-    //     ShipmentStatus: { S: newImage.StepFunctionStatus.S },
+    //     ShipmentStatus: { S: keys.StepFunctionStatus.S },
     //   },
     //   ConditionExpression: "ShipmentStatus = :value",
     //   ExpressionAttributeValues: {
@@ -48,7 +50,7 @@ module.exports.handler = async (event, context, callback) => {
       TableName: P44_LOCATION_UPDATE_TABLE,
       IndexName: "shipment-status-index-dev",
       Key: {
-        ShipmentStatus: { S: newImage.StepFunctionStatus.S },
+        ShipmentStatus: { S: keys.StepFunctionStatus.S },
       },
       UpdateExpression: "SET #attr = :val",
       ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
@@ -65,11 +67,11 @@ module.exports.handler = async (event, context, callback) => {
     console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
 
     // const locationDlt = await delete_dynamo_item(locationParams);
-    const locationResp = await update_dynamo(locationParams);
-    console.log(
-      "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
-      locationResp
-    );
+    // const locationResp = await update_dynamo_item(locationParams);
+    // console.log(
+    //   "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
+    //   locationResp
+    // );
   } catch (error) {
     console.log("Error", error);
     return callback(response("[400]", "First Lambda Failed"));
