@@ -1,5 +1,6 @@
 const AWS = require("aws-sdk");
 const stepfunctions = new AWS.StepFunctions();
+const { STEP_FUNCTION_ARN } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -14,8 +15,7 @@ async function startP44LocationStepFn(event) {
   return new Promise(async (resolve, reject) => {
     try {
       const params = {
-        stateMachineArn:
-          "arn:aws:states:us-east-1:332281781429:stateMachine:omni-p44-process-location-updates-dev",
+        stateMachineArn: STEP_FUNCTION_ARN,
         input: JSON.stringify(event),
       };
 

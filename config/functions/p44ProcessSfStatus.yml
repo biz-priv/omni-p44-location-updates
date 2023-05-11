@@ -18,9 +18,9 @@ function:
   events:
     - stream:
         type: dynamodb
-        arn: arn:aws:dynamodb:us-east-1:332281781429:table/omni-p44-location-sf-status-dev/stream/2023-05-08T15:17:39.813
+        arn: arn:aws:dynamodb:us-east-1:332281781429:table/omni-p44-location-sf-status-${self:provider.stage}/stream/2023-05-08T15:17:39.813
         operation: "insert"
         filterPatterns:
           - eventName: [INSERT]
   environment:
-    SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/shipment-header/ddb.tableName~true}
+    STEP_FUNCTION_ARN: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/state_machine_arn}

@@ -6,20 +6,17 @@ function:
   runtime: nodejs14.x
   memorySize: 2048
   timeout: 900
-  # layers:
-  #   - { Ref: CommonLibsLambdaLayer }
-  # package:
-  #   include:
-  #     - "src/p44ProcessFromSQS/index.js"
-  #     - "src/shared/**"
-  #   exclude:
-  #     - "**/*"
+  layers:
+    - { Ref: CommonLibsLambdaLayer }
+  package:
+    include:
+      - "src/p44ProcessFromSQS/index.js"
+      - "src/shared/**"
+    exclude:
+      - "**/*"
   events:
     - sqs:
         arn: arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-${self:provider.stage}
         batchSize: 10
         maximumBatchingWindow: 60
         functionResponseType: ReportBatchItemFailures
-  environment:
-    P44_LOCATION_UPDATE_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.table_name}
-    P44_SQS_QUEUE_URL: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/SQS.queue_url}

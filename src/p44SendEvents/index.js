@@ -1,7 +1,8 @@
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo } = require("../shared/dynamoDb");
 const { response, requester } = require("../shared/helper");
-const { P44_LOCATION_UPDATE_TABLE } = process.env;
+const { P44_LOCATION_UPDATE_TABLE, SF_TABLE_INDEX_KEY, P44_API_URL } =
+  process.env;
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -9,7 +10,7 @@ module.exports.handler = async (event, context, callback) => {
   try {
     const params = {
       TableName: P44_LOCATION_UPDATE_TABLE,
-      IndexName: "shipment-status-index-dev",
+      IndexName: SF_TABLE_INDEX_KEY,
       KeyConditionExpression: "ShipmentStatus = :pk",
       FilterExpression: "HouseBillNo = :val",
       ExpressionAttributeValues: marshall({
@@ -41,7 +42,7 @@ module.exports.handler = async (event, context, callback) => {
       //   password: PASSWORD,
       // },
       data: p44Payload,
-      url: "https://na12.api.project44.com/api/v4/capacityproviders/tl/shipments/statusUpdates",
+      url: P44_API_URL,
     };
     const sendResponse = await requester(options);
     console.log("sendResponse", sendResponse);
