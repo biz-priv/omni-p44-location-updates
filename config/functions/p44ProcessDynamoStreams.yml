@@ -6,14 +6,14 @@ function:
   runtime: nodejs14.x
   memorySize: 2048
   timeout: 900
-  # layers:
-  #   - { Ref: CommonLibsLambdaLayer }
-  # package:
-  #   include:
-  #     - "src/p44ProcessDynamoStreams/index.js"
-  #     - "src/shared/**"
-  #   exclude:
-  #     - "**/*"
+  layers:
+    - { Ref: CommonLibsLambdaLayer }
+  package:
+    include:
+      - "src/p44ProcessDynamoStreams/index.js"
+      - "src/shared/**"
+    exclude:
+      - "**/*"
   events:
     - stream:
         type: dynamodb
