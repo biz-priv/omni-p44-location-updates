@@ -24,10 +24,10 @@ module.exports.handler = async (event, context, callback) => {
 
     const locationData = await query_dynamo(params);
     console.log("locationData", JSON.stringify(locationData));
-
+    console.log(locationData.Items.length);
     let sendResponse;
     for (let i = 0; i < locationData.Items.length; i++) {
-      console.log("LoopCount", i++);
+      console.log("LoopCount", i);
       const p44Payload = {
         shipmentIdentifiers: [
           {
@@ -42,6 +42,8 @@ module.exports.handler = async (event, context, callback) => {
         customerId: "MCKESSON",
         eventType: "POSITION",
       };
+      console.log("p44Payload", p44Payload);
+
       const options = {
         method: "POST",
         data: p44Payload,
@@ -53,9 +55,9 @@ module.exports.handler = async (event, context, callback) => {
       };
 
       sendResponse = await requester(options);
+      console.log("sendResponse", JSON.stringify(sendResponse));
     }
 
-    console.log("sendResponse", sendResponse);
     console.log("Response Send To P44 EndPoint");
   } catch (error) {
     console.log("Error", error);
