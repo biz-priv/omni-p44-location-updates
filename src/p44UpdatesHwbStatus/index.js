@@ -19,12 +19,13 @@ module.exports.handler = async (event, context, callback) => {
     let keys = stepEvent.Records[0].dynamodb.Keys;
     const houseBill = keys.HouseBillNo.S;
     const sfStatus = keys.StepFunctionStatus.S;
-    let locationStatus =
-      keys.StepFunctionStatus.S === "Yet to be Processed"
-        ? "In-Complete"
-        : "Yet To be Processed";
+    let locationStatus = "";
 
-    console.log(sfStatus, houseBill);
+    if (keys.StepFunctionStatus.S === "Yet to be Processed") {
+      locationStatus = "In-Complete";
+    }
+
+    // console.log(sfStatus, houseBill);
 
     let sfDynamoPayload = {
       HouseBillNo: houseBill,
@@ -60,12 +61,12 @@ module.exports.handler = async (event, context, callback) => {
     // console.log("utcTimeStamp", utcTimeStamp);
     //--------------------------------------------------------------------------------------------->
 
-    console.log("sfParams", sfParams);
+    // console.log("sfParams", sfParams);
     // console.log("locationParams", locationParams);
 
     const sfDlt = await delete_dynamo_item(sfDltParams);
     const sfResp = await put_dynamo(sfParams);
-    console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
+    // console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
 
     let locationResp;
     if (locationData.Items.length > 0) {
