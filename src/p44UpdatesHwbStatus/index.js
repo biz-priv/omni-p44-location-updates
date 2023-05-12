@@ -46,7 +46,7 @@ module.exports.handler = async (event, context, callback) => {
     //--------------------------------------------------------------------------------------------->
     const params = {
       TableName: P44_LOCATION_UPDATE_TABLE,
-      IndexName: "p44-sf-status-dev",
+      IndexName: "shipment-status-index-dev",
       KeyConditionExpression: "ShipmentStatus = :pk",
       FilterExpression: "HouseBillNo = :val",
       ExpressionAttributeValues: marshall({
