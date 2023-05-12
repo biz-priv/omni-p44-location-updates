@@ -27,6 +27,7 @@ module.exports.handler = async (event, context, callback) => {
 
     let sendResponse;
     for (let i = 0; i < locationData.Items.length; i++) {
+      console.log("LoopCount", i++);
       const p44Payload = {
         shipmentIdentifiers: [
           {
