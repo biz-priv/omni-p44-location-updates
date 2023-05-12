@@ -9,6 +9,12 @@ const { marshall } = require("@aws-sdk/util-dynamodb");
 const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE, SF_TABLE_INDEX_KEY } =
   process.env;
 
+//=============>
+const AWS = require("aws-sdk");
+var ddb = new AWS.DynamoDB.DocumentClient();
+let items;
+let queryResults = [];
+
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
   console.log("event==>", typeof event);
@@ -54,9 +60,19 @@ module.exports.handler = async (event, context, callback) => {
         ":pk": locationStatus,
         ":val": houseBill,
       }),
+      limit: 100,
     };
+    console.log(params);
+    // const locationData = await query_dynamo(params);
 
-    const locationData = await query_dynamo(params);
+    do {
+      items = await ddb.query(params).promise();
+      items.Items.forEach((item) => queryResults.push(item));
+      params.ExclusiveStartKey = items.LastEvaluatedKey;
+    } while (typeof items.LastEvaluatedKey != "undefined");
+
+    const locationData = queryResults;
+
     console.log("locationData", JSON.stringify(locationData));
     // console.log("utcTimeStamp", utcTimeStamp);
     //--------------------------------------------------------------------------------------------->

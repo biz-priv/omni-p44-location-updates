@@ -1,12 +1,14 @@
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo } = require("../shared/dynamoDb");
-const { response, requester } = require("../shared/helper");
+const { response, requester, authToken } = require("../shared/helper");
 const { P44_LOCATION_UPDATE_TABLE, SF_TABLE_INDEX_KEY, P44_API_URL } =
   process.env;
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
   const { houseBill } = event;
+  const accessToken = await authToken();
+  console.log("accessToken", accessToken);
 
   try {
     const params = {
@@ -41,12 +43,12 @@ module.exports.handler = async (event, context, callback) => {
       };
       const options = {
         method: "POST",
-        // auth: {
-        //   username: USERNAME,
-        //   password: PASSWORD,
-        // },
         data: p44Payload,
         url: P44_API_URL,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
       };
 
       sendResponse = await requester(options);
