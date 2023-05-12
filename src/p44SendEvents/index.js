@@ -26,7 +26,7 @@ module.exports.handler = async (event, context, callback) => {
     console.log("locationData", JSON.stringify(locationData));
 
     let sendResponse;
-    for (let i = 0; i < array.length; i++) {
+    for (let i = 0; i < locationData.Items.length; i++) {
       const p44Payload = {
         shipmentIdentifiers: [
           {
