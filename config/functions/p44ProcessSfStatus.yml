@@ -19,7 +19,6 @@ function:
     - stream:
         type: dynamodb
         arn: arn:aws:dynamodb:us-east-1:332281781429:table/omni-p44-location-sf-status-${self:provider.stage}/stream/2023-05-08T15:17:39.813
-        operation: "insert"
         filterPatterns:
           - eventName: [INSERT]
   environment:
