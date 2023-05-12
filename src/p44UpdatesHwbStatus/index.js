@@ -61,7 +61,7 @@ module.exports.handler = async (event, context, callback) => {
     //--------------------------------------------------------------------------------------------->
 
     console.log("sfParams", sfParams);
-    console.log("locationParams", locationParams);
+    // console.log("locationParams", locationParams);
 
     const sfDlt = await delete_dynamo_item(sfDltParams);
     const sfResp = await put_dynamo(sfParams);
@@ -71,6 +71,7 @@ module.exports.handler = async (event, context, callback) => {
     if (locationData.Items.length > 0) {
       for (let i = 0; i < locationData.Items.length; i++) {
         const utcTimeStamp = locationData.Items[i].UTCTimeStamp.S;
+        console.log(`utcTimeStamp${i}=====>`, utcTimeStamp);
         const locationParams = {
           TableName: P44_LOCATION_UPDATE_TABLE,
           Key: {
