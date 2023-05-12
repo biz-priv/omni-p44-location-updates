@@ -13,7 +13,7 @@ module.exports.handler = async (event, context, callback) => {
   try {
     const params = {
       TableName: P44_LOCATION_UPDATE_TABLE,
-      IndexName: SF_TABLE_INDEX_KEY,
+      IndexName: "shipment-status-index-dev",
       KeyConditionExpression: "ShipmentStatus = :pk",
       FilterExpression: "HouseBillNo = :val",
       ExpressionAttributeValues: marshall({

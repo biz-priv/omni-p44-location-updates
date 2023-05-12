@@ -56,10 +56,10 @@ module.exports.handler = async (event, context, callback) => {
       IndexName: "shipment-status-index-dev",
       KeyConditionExpression: "ShipmentStatus = :pk",
       FilterExpression: "HouseBillNo = :val",
-      ExpressionAttributeValues: marshall({
+      ExpressionAttributeValues: {
         ":pk": locationStatus,
         ":val": houseBill,
-      }),
+      },
       limit: 100,
     };
     console.log(params);
@@ -85,9 +85,9 @@ module.exports.handler = async (event, context, callback) => {
     // console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
 
     let locationResp;
-    if (locationData.Items.length > 0) {
-      for (let i = 0; i < locationData.Items.length; i++) {
-        const utcTimeStamp = locationData.Items[i].UTCTimeStamp.S;
+    if (locationData.length > 0) {
+      for (let i = 0; i < locationData.length; i++) {
+        const utcTimeStamp = locationData[i].UTCTimeStamp;
         console.log(`utcTimeStamp${i}=====>`, utcTimeStamp);
         const locationParams = {
           TableName: P44_LOCATION_UPDATE_TABLE,
