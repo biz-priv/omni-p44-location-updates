@@ -49,7 +49,7 @@ module.exports.handler = async (event, context, callback) => {
 
     const refParams = {
       TableName: REFERENCE_TABLE,
-      IndexName: "omni-wt-rt-ref-orderNo-index-dev",
+      IndexName: "omni-wt-rt-ref-orderNo-index-prod",
       KeyConditionExpression: "FK_OrderNo = :order_no",
       FilterExpression:
         "CustomerType = :customer_type AND FK_RefTypeId IN (:ref_type1, :ref_type2)",
