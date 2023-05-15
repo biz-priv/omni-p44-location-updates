@@ -9,6 +9,8 @@ const { marshall } = require("@aws-sdk/util-dynamodb");
 const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE, SF_TABLE_INDEX_KEY } =
   process.env;
 
+const { log, logUtilization } = require("../shared/logger");
+
 //=============>
 const AWS = require("aws-sdk");
 var ddb = new AWS.DynamoDB.DocumentClient();
@@ -22,6 +24,7 @@ module.exports.handler = async (event, context, callback) => {
 
   try {
     let newImage = stepEvent.Records[0].dynamodb.NewImage;
+    const correlationId = newImage.CorrelationId.S;
     let keys = stepEvent.Records[0].dynamodb.Keys;
     const houseBill = keys.HouseBillNo.S;
     const sfStatus = keys.StepFunctionStatus.S;
@@ -109,6 +112,9 @@ module.exports.handler = async (event, context, callback) => {
       "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
       locationResp
     );
+    log(correlationId, JSON.stringify(event), 200);
+    log(correlationId, JSON.stringify(locationResp), 200);
+    await logUtilization(correlationId);
 
     return { houseBill };
   } catch (error) {

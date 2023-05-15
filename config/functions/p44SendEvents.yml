@@ -15,5 +15,7 @@ function:
     exclude:
       - "**/*"
   environment:
+    SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/prod/shipment-header/ddb.tableName~true}
+    REFERENCE_TABLE: ${ssm:/omni-wt-rt-updates/prod/references/ddb.tableName~true}
     SF_TABLE_INDEX_KEY: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stepFunctionStatus_index}
     P44_API_URL: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/API.url}

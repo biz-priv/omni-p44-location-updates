@@ -13,6 +13,8 @@ module.exports.handler = async (event, context, callback) => {
   for (let i = 0; i < record.length; i++) {
     const houseBill = event.Records[i].dynamodb.NewImage.HouseBillNo.S;
     const correlationId = event.Records[i].dynamodb.NewImage.CorrelationId.S;
+    await logUtilization(billNumber);
+
     console.log("houseBill", houseBill);
 
     if (event.Records[i].eventName === "INSERT") {
@@ -32,7 +34,7 @@ module.exports.handler = async (event, context, callback) => {
 
         if (shipmetData.Items.length > 0) {
           const billNumber = shipmetData.Items[0].BillNo.S;
-          await logUtilization(billNumber);
+          log(correlationId, JSON.stringify(billNumber), 200);
 
           console.log("billNumber", billNumber);
           console.log("customerIds", customerIds);
@@ -56,7 +58,6 @@ module.exports.handler = async (event, context, callback) => {
           }
         } else {
           console.log("Ignored response");
-          // return callback(response("[400]", "Ignored response"));
         }
       } catch (error) {
         console.error(error);

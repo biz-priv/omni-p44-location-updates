@@ -1,9 +1,12 @@
 const AWS = require("aws-sdk");
 const stepfunctions = new AWS.StepFunctions();
 const { STEP_FUNCTION_ARN } = process.env;
+const { log, logUtilization } = require("../shared/logger");
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
+  const correlationId = event.Records[0].NewImage.CorrelationId.S;
+  log(correlationId, JSON.stringify(event), 200);
   if (event.Records[0].eventName === "INSERT") {
     await startP44LocationStepFn(event);
   }

@@ -4,15 +4,16 @@ const { log, logUtilization } = require("../shared/logger");
 const { P44_SQS_QUEUE_URL } = process.env;
 
 module.exports.handler = async (event, context, callback) => {
-  console.log("P44_SQS_QUEUE_URL", P44_SQS_QUEUE_URL);
   console.log("Event", JSON.stringify(event));
 
   const body = event.body;
-  console.log(isArray(body));
   const correlationId = isArray(body)
     ? body[0].correlationId
     : body.correlationId;
+
+  log(correlationId, JSON.stringify(isArray(body)), 200);
   log(correlationId, JSON.stringify(event), 200);
+
   await logUtilization(correlationId);
 
   try {
@@ -32,7 +33,7 @@ module.exports.handler = async (event, context, callback) => {
       QueueUrl: P44_SQS_QUEUE_URL,
     };
     let queueRes = await send_message(params);
-    console.log("response", queueRes);
+    log(correlationId, JSON.stringify(queueRes), 200);
 
     return {
       locationUpdateResponse: {

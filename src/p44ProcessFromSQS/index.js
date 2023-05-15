@@ -3,6 +3,7 @@ const AWS = require("aws-sdk");
 const sqs = new AWS.SQS();
 const moment = require("moment-timezone");
 const { put_dynamo } = require("../shared/dynamoDb");
+const { log, logUtilization } = require("../shared/logger");
 
 const { P44_LOCATION_UPDATE_TABLE, P44_SQS_QUEUE_URL } = process.env;
 
@@ -25,7 +26,11 @@ exports.handler = async (event) => {
     } else {
       console.log("No messages received");
     }
+
     let dynamoPayload = JSON.parse(event.Records[0].body);
+    const correlationId = dynamoPayload.correlationId;
+    await logUtilization(correlationId);
+
     dynamoPayload = {
       HouseBillNo: dynamoPayload.housebill,
       UTCTimeStamp: dynamoPayload.UTCTimestamp,
@@ -40,6 +45,7 @@ exports.handler = async (event) => {
     };
     dynamoPayload = marshall(dynamoPayload);
     console.log("dynamoPayload", dynamoPayload);
+    log(correlationId, JSON.stringify(dynamoPayload), 200);
 
     const dynamoParams = {
       TableName: P44_LOCATION_UPDATE_TABLE,
@@ -47,8 +53,11 @@ exports.handler = async (event) => {
     };
 
     console.log(dynamoParams);
+    log(correlationId, JSON.stringify(dynamoParams), 200);
+
     const res = await put_dynamo(dynamoParams);
     console.log("res", JSON.stringify(res));
+    log(correlationId, JSON.stringify(res), 200);
   } catch (err) {
     console.log("Error", err);
   }
