@@ -3,6 +3,7 @@ const { query_dynamo } = require("../shared/dynamoDb");
 const { response, requester, authToken } = require("../shared/helper");
 const { P44_LOCATION_UPDATE_TABLE, SF_TABLE_INDEX_KEY, P44_API_URL } =
   process.env;
+const REFERENCE_TABLE = "omni-wt-rt-references-dev";
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -22,9 +23,29 @@ module.exports.handler = async (event, context, callback) => {
       }),
     };
 
+    const refParams = {
+      TableName: REFERENCE_TABLE,
+      IndexName: "omni-wt-rt-ref-orderNo-index-dev",
+      KeyConditionExpression: "FK_OrderNo = :order_no",
+      FilterExpression:
+        "CustomerType = :customer_type AND FK_RefTypeId IN (:ref_type1, :ref_type2)",
+      ExpressionAttributeValues: marshall({
+        ":order_no": houseBill,
+        ":customer_type": "B",
+        ":ref_type1": "LOA",
+        ":ref_type2": "BOL",
+      }),
+    };
+
     const locationData = await query_dynamo(params);
     console.log("locationData", JSON.stringify(locationData));
     console.log(locationData.Items.length);
+
+    const referencesData = await query_dynamo(refParams);
+    console.log("referencesData", JSON.stringify(referencesData));
+    console.log(referencesData.Items.length);
+    const value = referencesData?.Items[0]?.PK_ReferenceNo?.S ?? "";
+
     let sendResponse;
     for (let i = 0; i < locationData.Items.length; i++) {
       console.log("LoopCount", i);
@@ -32,7 +53,7 @@ module.exports.handler = async (event, context, callback) => {
         shipmentIdentifiers: [
           {
             type: "BILL_OF_LADING",
-            value: "string",
+            value: value,
           },
         ],
         latitude: locationData.Items[i].latitude.N,

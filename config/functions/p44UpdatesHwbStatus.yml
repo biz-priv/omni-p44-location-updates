@@ -2,7 +2,7 @@
 function:
   name: omni-p44-update-hwb-status-${self:provider.stage}
   handler: src/p44UpdatesHwbStatus/index.handler
-  description: P44 updates hwb status - ${self:provider.stage}
+  description: part of omni-p44-process-location-updates-${self:provider.stage} sf that updates hawbs to pending, keeping ready to process for p44 API
   runtime: nodejs14.x
   memorySize: 2048
   timeout: 900

@@ -2,7 +2,7 @@
 function:
   name: omni-p44-send-events-${self:provider.stage}
   handler: src/p44SendEvents/index.handler
-  description: P44 send events to endpoint - ${self:provider.stage}
+  description: part of omni-p44-process-location-updates-${self:provider.stage} sf that sends events to p44 API
   runtime: nodejs14.x
   memorySize: 2048
   timeout: 900
