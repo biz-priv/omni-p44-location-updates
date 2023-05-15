@@ -13,7 +13,7 @@ module.exports.handler = async (event, context, callback) => {
   for (let i = 0; i < record.length; i++) {
     const houseBill = event.Records[i].dynamodb.NewImage.HouseBillNo.S;
     const correlationId = event.Records[i].dynamodb.NewImage.CorrelationId.S;
-    await logUtilization(billNumber);
+    await logUtilization(correlationId);
 
     console.log("houseBill", houseBill);
 

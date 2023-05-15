@@ -5,8 +5,8 @@ const { log, logUtilization } = require("../shared/logger");
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
-  const correlationId = event.Records[0].NewImage.CorrelationId.S;
-  log(correlationId, JSON.stringify(event), 200);
+  // const correlationId = event.Records[0].NewImage.CorrelationId.S;
+  // log(correlationId, JSON.stringify(event), 200);
   if (event.Records[0].eventName === "INSERT") {
     await startP44LocationStepFn(event);
   }

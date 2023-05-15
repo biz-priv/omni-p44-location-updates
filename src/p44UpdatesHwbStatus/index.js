@@ -24,7 +24,7 @@ module.exports.handler = async (event, context, callback) => {
 
   try {
     let newImage = stepEvent.Records[0].dynamodb.NewImage;
-    const correlationId = newImage.CorrelationId.S;
+    let correlationId = "";
     let keys = stepEvent.Records[0].dynamodb.Keys;
     const houseBill = keys.HouseBillNo.S;
     const sfStatus = keys.StepFunctionStatus.S;
@@ -91,6 +91,9 @@ module.exports.handler = async (event, context, callback) => {
     if (locationData.length > 0) {
       for (let i = 0; i < locationData.length; i++) {
         const utcTimeStamp = locationData[i].UTCTimeStamp;
+        correlationId = locationData[i].CorrelationId;
+        log(correlationId, JSON.stringify(correlationId), 200);
+
         console.log(`utcTimeStamp${i}=====>`, utcTimeStamp);
         const locationParams = {
           TableName: P44_LOCATION_UPDATE_TABLE,
