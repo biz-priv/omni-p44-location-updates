@@ -14,6 +14,7 @@ function:
       - "src/shared/**"
     exclude:
       - "**/*"
+  logSubscription: true
   events:
     - sqs:
         arn: arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-${self:provider.stage}

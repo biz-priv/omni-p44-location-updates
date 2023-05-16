@@ -36,6 +36,7 @@ function:
               headers:
                 Content-Type: "'application/json'"
               template: ${file(responseTemplate.vtl)}
+  logSubscription: true
   environment:
     FUNCTION_NAME: omni-location-updates-api-${self:provider.stage}
     SERVICE_NAME: ${self:service}
