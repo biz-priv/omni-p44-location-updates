@@ -7,7 +7,10 @@ module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
   // const correlationId = event.Records[0].NewImage.CorrelationId.S;
   // log(correlationId, JSON.stringify(event), 200);
-  if (event.Records[0].eventName === "INSERT") {
+  if (
+    event.Records[0].eventName === "INSERT" &&
+    event.Records[0].dynamodb.Keys.StepFunctionStatus != "Pending"
+  ) {
     await startP44LocationStepFn(event);
   }
 };

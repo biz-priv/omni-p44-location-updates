@@ -103,7 +103,7 @@ module.exports.handler = async (event, context, callback) => {
       };
 
       sendResponse = await requester(options);
-      console.log("sendResponse", JSON.stringify(sendResponse));
+      console.log("sendResponse", sendResponse);
     }
     console.log("Response Send To P44 EndPoint");
   } catch (error) {
