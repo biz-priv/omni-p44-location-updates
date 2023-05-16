@@ -9,7 +9,8 @@ module.exports.handler = async (event, context, callback) => {
   // log(correlationId, JSON.stringify(event), 200);
   if (
     event.Records[0].eventName === "INSERT" &&
-    event.Records[0].dynamodb.Keys.StepFunctionStatus != "Pending"
+    event.Records[0].dynamodb.Keys.StepFunctionStatus.S ===
+      "Yet to be Processed"
   ) {
     await startP44LocationStepFn(event);
   }
