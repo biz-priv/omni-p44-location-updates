@@ -14,7 +14,7 @@ function:
       - "src/shared/**"
     exclude:
       - "**/*"
-  logSubscription: true
+  # logSubscription: true
   events:
     - stream:
         type: dynamodb
