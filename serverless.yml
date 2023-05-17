@@ -63,11 +63,6 @@ provider:
     P44_AUTH_API: ${ssm:/omni-p44-rt-updates/${self:provider.stage}/authApi.url}
     DESTINATION: arn:aws:logs:${self:provider.region}:332753493246:destination:bce-logs-cw-destination-${self:provider.region}-${self:provider.stage}
 
-logSubscription:
-  enabled: true
-  destinationArn: arn:aws:logs:${self:provider.region}:332753493246:destination:bce-logs-cw-destination-${self:provider.region}-${self:provider.stage}
-  filterPattern: '{$.service-name = "*"}'
-
 plugins:
   - serverless-offline
   - serverless-plugin-log-subscription
@@ -90,6 +85,12 @@ custom:
     "Access-Control-Allow-Origin": "'*'"
     "Access-Control-Allow-Credentials": "'true'"
     "Access-Control-Allow-Headers": "'*'"
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  logSubscription:
+    enabled: true
+    destinationArn: arn:aws:logs:${self:provider.region}:332753493246:destination:bce-logs-cw-destination-${self:provider.region}-${self:provider.stage}
+    filterPattern: '{$.service-name = "*"}'
 
 package:
   individually: true
