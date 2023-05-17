@@ -68,7 +68,7 @@ module.exports.handler = async (event, context, callback) => {
     const referencesData = await query_dynamo(refParams);
     console.log("referencesData", JSON.stringify(referencesData));
     console.log(referencesData.Items.length);
-    const value = referencesData?.Items[0]?.PK_ReferenceNo?.S ?? "";
+    const value = referencesData?.Items[0]?.ReferenceNo?.S ?? "";
 
     let sendResponse;
     for (let i = 0; i < locationData.Items.length; i++) {
