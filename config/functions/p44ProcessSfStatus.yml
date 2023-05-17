@@ -24,3 +24,6 @@ function:
           - eventName: [INSERT]
   environment:
     STEP_FUNCTION_ARN: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/state_machine_arn}
+    FUNCTION_NAME: omni-p44-process-ddb-sf-status-${self:provider.stage}
+    SERVICE_NAME: ${self:service}
+    APPLICATION: DataWarehouse

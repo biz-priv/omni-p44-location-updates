@@ -55,7 +55,8 @@ provider:
   environment:
     STAGE: ${self:provider.stage}
     REGION: ${self:provider.region}
-    SERVICE: ${self:service}
+    SERVICE_NAME: ${self:service}
+    APPLICATION: DataWarehouse
     P44_LOCATION_UPDATE_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.table_name}
     P44_SQS_QUEUE_URL: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/SQS.queue_url}
     P44_CLIENT_ID: ${ssm:/omni-p44-rt-updates/${self:provider.stage}/p44-credentials/clientId}

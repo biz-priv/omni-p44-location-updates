@@ -21,3 +21,7 @@ function:
         batchSize: 10
         maximumBatchingWindow: 60
         functionResponseType: ReportBatchItemFailures
+  environment:
+    FUNCTION_NAME: omni-p44-process-from-sqs-${self:provider.stage}
+    SERVICE_NAME: ${self:service}
+    APPLICATION: DataWarehouse
