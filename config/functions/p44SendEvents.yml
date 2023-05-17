@@ -14,7 +14,7 @@ function:
       - "src/shared/**"
     exclude:
       - "**/*"
-  # logSubscription: true
+  logSubscription: true
   environment:
     SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/prod/shipment-header/ddb.tableName~true}
     REFERENCE_TABLE: ${ssm:/omni-wt-rt-updates/prod/references/ddb.tableName~true}

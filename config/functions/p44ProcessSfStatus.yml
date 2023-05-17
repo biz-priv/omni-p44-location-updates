@@ -15,7 +15,7 @@ function:
       - src/shared/logger.js
     exclude:
       - "**/*"
-  # logSubscription: true
+  logSubscription: true
   events:
     - stream:
         type: dynamodb
