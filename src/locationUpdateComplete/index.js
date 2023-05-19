@@ -51,54 +51,9 @@ module.exports.handler = async (event, context, callback) => {
       console.log("Udated Successfully in P44_SF_STATUS_TABLE");
 
       // Query Location_Update ------------------------------------------------------>
-      const params = {
-        TableName: P44_LOCATION_UPDATE_TABLE,
-        IndexName: "shipment-status-index-dev",
-        KeyConditionExpression: "ShipmentStatus = :pk",
-        FilterExpression: "HouseBillNo = :val",
-        ExpressionAttributeValues: {
-          ":pk": "Pending",
-          ":val": houseBill,
-        },
-        limit: 100,
-      };
-
-      do {
-        items = await ddb.query(params).promise();
-        items.Items.forEach((item) => queryResults.push(item));
-        params.ExclusiveStartKey = items.LastEvaluatedKey;
-      } while (typeof items.LastEvaluatedKey != "undefined");
-
-      console.log("locationData", JSON.stringify(queryResults));
 
       // Update Location_Updates------------------------------------------------------------>
-      let locationResp;
-      if (queryResults.length > 0) {
-        for (let i = 0; i < queryResults.length; i++) {
-          const utcTimeStamp = queryResults[i].UTCTimeStamp;
-          correlationId = queryResults[i].CorrelationId;
-          log(correlationId, JSON.stringify(correlationId), 200);
 
-          console.log(`utcTimeStamp ${i}=====>`, utcTimeStamp);
-          const locationParams = {
-            TableName: P44_LOCATION_UPDATE_TABLE,
-            Key: {
-              HouseBillNo: { S: houseBill },
-              UTCTimeStamp: { S: utcTimeStamp },
-            },
-            UpdateExpression: "SET #attr = :val",
-            ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
-            ExpressionAttributeValues: {
-              ":val": { S: "Complete" },
-            },
-          };
-          locationResp = await update_dynamo_item(locationParams);
-        }
-      }
-      console.log(
-        "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
-        locationResp
-      );
       log(correlationId, JSON.stringify(event), 200);
       log(correlationId, JSON.stringify(locationResp), 200);
       await logUtilization(correlationId);
