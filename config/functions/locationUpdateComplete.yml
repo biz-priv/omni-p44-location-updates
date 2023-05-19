@@ -16,12 +16,12 @@ function:
     exclude:
       - "**/*"
   logSubscription: true
-  # events:
-  #   - stream:
-  #       type: dynamodb
-  #       arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.stream_arn}
-  #       filterPatterns:
-  #         - eventName: [MODIFY]
+  events:
+    - stream:
+        type: dynamodb
+        arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.stream_arn}
+        filterPatterns:
+          - eventName: [MODIFY]
   environment:
     P44_SF_STATUS_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
     FUNCTION_NAME: omni-p44-location-update-complete-${self:provider.stage}

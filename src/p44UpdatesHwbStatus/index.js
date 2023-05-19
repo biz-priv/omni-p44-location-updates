@@ -1,15 +1,15 @@
+const { marshall } = require("@aws-sdk/util-dynamodb");
 const { response } = require("../shared/helper");
+const { log, logUtilization } = require("../shared/logger");
 const {
   put_dynamo,
   delete_dynamo_item,
   update_dynamo_item,
   query_dynamo,
 } = require("../shared/dynamoDb");
-const { marshall } = require("@aws-sdk/util-dynamodb");
+
 const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE, SF_TABLE_INDEX_KEY } =
   process.env;
-
-const { log, logUtilization } = require("../shared/logger");
 
 //=============>
 const AWS = require("aws-sdk");
@@ -34,8 +34,7 @@ module.exports.handler = async (event, context, callback) => {
       locationStatus = "In-Complete";
     }
 
-    // console.log(sfStatus, houseBill);
-
+    // For SF_Status--------------------------------------------------------------------->
     let sfDynamoPayload = {
       HouseBillNo: houseBill,
       StepFunctionStatus: "Pending",
@@ -53,7 +52,8 @@ module.exports.handler = async (event, context, callback) => {
       TableName: P44_SF_STATUS_TABLE,
       Item: sfDynamoPayload,
     };
-    //--------------------------------------------------------------------------------------------->
+
+    // Query Location updates --------------------------------------------------------------------------------------------->
     const params = {
       TableName: P44_LOCATION_UPDATE_TABLE,
       IndexName: "shipment-status-index-dev",
@@ -65,8 +65,7 @@ module.exports.handler = async (event, context, callback) => {
       },
       limit: 100,
     };
-    console.log(params);
-    // const locationData = await query_dynamo(params);
+    console.log("Location_Query_Params", params);
 
     do {
       items = await ddb.query(params).promise();
@@ -75,18 +74,18 @@ module.exports.handler = async (event, context, callback) => {
     } while (typeof items.LastEvaluatedKey != "undefined");
 
     const locationData = queryResults;
-
     console.log("locationData", JSON.stringify(locationData));
-    // console.log("utcTimeStamp", utcTimeStamp);
     //--------------------------------------------------------------------------------------------->
 
     // console.log("sfParams", sfParams);
     // console.log("locationParams", locationParams);
 
+    // Update SF_Status---------------------------------------------------------------------------->
     const sfDlt = await delete_dynamo_item(sfDltParams);
     const sfResp = await put_dynamo(sfParams);
-    // console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
+    console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
 
+    // Update Location_Updates---------------------------------------------------------------------------->
     let locationResp;
     if (locationData.length > 0) {
       for (let i = 0; i < locationData.length; i++) {

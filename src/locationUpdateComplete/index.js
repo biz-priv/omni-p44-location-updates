@@ -23,11 +23,13 @@ module.exports.handler = async (event, context, callback) => {
 
   if (shipmentStatus === "Pending") {
     try {
+      // For Sf_Status------------------------------------------------------------->
       let sfDynamoPayload = {
         HouseBillNo: houseBill,
         StepFunctionStatus: "Complete",
       };
       sfDynamoPayload = marshall(sfDynamoPayload);
+
       const sfDltParams = {
         TableName: P44_SF_STATUS_TABLE,
         Key: {
@@ -42,10 +44,13 @@ module.exports.handler = async (event, context, callback) => {
 
       console.log("sfDltParams", sfDltParams);
       console.log("sfParams", sfParams);
+
+      // Update Sf_Status------------------------------------------------------------>
       const sfDlt = await delete_dynamo_item(sfDltParams);
       const sfResp = await put_dynamo(sfParams);
       console.log("Udated Successfully in P44_SF_STATUS_TABLE");
 
+      // Query Location_Update ------------------------------------------------------>
       const params = {
         TableName: P44_LOCATION_UPDATE_TABLE,
         IndexName: "shipment-status-index-dev",
@@ -66,6 +71,7 @@ module.exports.handler = async (event, context, callback) => {
 
       console.log("locationData", JSON.stringify(queryResults));
 
+      // Update Location_Updates------------------------------------------------------------>
       let locationResp;
       if (queryResults.length > 0) {
         for (let i = 0; i < queryResults.length; i++) {
@@ -83,7 +89,7 @@ module.exports.handler = async (event, context, callback) => {
             UpdateExpression: "SET #attr = :val",
             ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
             ExpressionAttributeValues: {
-              ":val": { S: "Pending" },
+              ":val": { S: "Complete" },
             },
           };
           locationResp = await update_dynamo_item(locationParams);

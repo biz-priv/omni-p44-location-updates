@@ -29,11 +29,11 @@ async function startP44LocationStepFn(event) {
       const response = await stepfunctions.startExecution(params).promise();
 
       console.log("Response", response);
-      console.log("P44 process updates location API started");
+      console.log("P44 Location Updates STEP-Function started");
       resolve(true);
     } catch (error) {
       console.log("Error", error);
-      console.log("P44 process updates location API failed ");
+      console.log("P44 Location Updates STEP-Function failed");
       resolve(false);
     }
   });

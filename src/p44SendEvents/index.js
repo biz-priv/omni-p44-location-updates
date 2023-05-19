@@ -44,7 +44,7 @@ module.exports.handler = async (event, context, callback) => {
     if (shipmentData.Items.length > 0) {
       orderNumber = shipmentData?.Items[0]?.PK_OrderNo?.S;
     } else {
-      return { errorMessage: "No data found in the Shipment-Header" };
+      return { errorMessage: "No data found in the Shipment-Header table" };
     }
 
     const refParams = {
@@ -61,19 +61,19 @@ module.exports.handler = async (event, context, callback) => {
       }),
     };
 
-    const locationData = await query_dynamo(params);
-    console.log("locationData", JSON.stringify(locationData));
-    console.log(locationData.Items.length);
-
     const referencesData = await query_dynamo(refParams);
     console.log("referencesData", JSON.stringify(referencesData));
     console.log(referencesData.Items.length);
     const value = referencesData?.Items[0]?.ReferenceNo?.S ?? "";
 
+    const locationData = await query_dynamo(params);
+    console.log("locationData", JSON.stringify(locationData));
+    console.log(locationData.Items.length);
+
     let sendResponse;
     for (let i = 0; i < locationData.Items.length; i++) {
       console.log("LoopCount", i);
-      const correlationId = locationData.Items[i].UTCTimeStamp.S;
+      const correlationId = locationData.Items[i].CorrelationId.S;
       log(correlationId, JSON.stringify(event), 200);
 
       const p44Payload = {
