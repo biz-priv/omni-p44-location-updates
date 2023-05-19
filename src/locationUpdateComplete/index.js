@@ -5,14 +5,16 @@ const {
   delete_dynamo_item,
   put_dynamo,
   update_dynamo_item,
+  query_dynamo,
 } = require("../shared/dynamoDb");
 const { P44_SF_STATUS_TABLE, P44_LOCATION_UPDATE_TABLE } = process.env;
 
 //=============>
-const AWS = require("aws-sdk");
-var ddb = new AWS.DynamoDB.DocumentClient();
-let items;
-let queryResults = [];
+// const AWS = require("aws-sdk");
+// var ddb = new AWS.DynamoDB.DocumentClient();
+// let items;
+// let queryResults = [];
+let correlationId = "";
 
 module.exports.handler = async (event, context, callback) => {
   console.log("Event", JSON.stringify(event));
@@ -45,14 +47,57 @@ module.exports.handler = async (event, context, callback) => {
       console.log("sfDltParams", sfDltParams);
       console.log("sfParams", sfParams);
 
+      // Query Location_Update ------------------------------------------------------>
+      const params = {
+        TableName: P44_LOCATION_UPDATE_TABLE,
+        IndexName: "shipment-status-index-dev",
+        KeyConditionExpression: "ShipmentStatus = :pk",
+        FilterExpression: "HouseBillNo = :val",
+        ExpressionAttributeValues: marshall({
+          ":pk": "Pending",
+          ":val": houseBill,
+        }),
+      };
+      const locationData = await query_dynamo(params);
+      console.log(locationData.Items);
+
+      console.log(locationData.Items.length);
+      console.log("Location_Query_Params", params);
+
       // Update Sf_Status------------------------------------------------------------>
       const sfDlt = await delete_dynamo_item(sfDltParams);
       const sfResp = await put_dynamo(sfParams);
       console.log("Udated Successfully in P44_SF_STATUS_TABLE");
 
-      // Query Location_Update ------------------------------------------------------>
-
       // Update Location_Updates------------------------------------------------------------>
+      let locationResp;
+      if (locationData.Items.length > 0) {
+        for (let i = 0; i < locationData.Items.length; i++) {
+          const utcTimeStamp = locationData.Items[i].UTCTimeStamp;
+          correlationId = locationData.Items[i].CorrelationId;
+          log(correlationId, JSON.stringify(correlationId), 200);
+
+          console.log(`utcTimeStamp${i}=====>`, utcTimeStamp);
+          const locationParams = {
+            TableName: P44_LOCATION_UPDATE_TABLE,
+            Key: {
+              HouseBillNo: { S: houseBill },
+              UTCTimeStamp: { S: utcTimeStamp },
+            },
+            UpdateExpression: "SET #attr = :val",
+            ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
+            ExpressionAttributeValues: {
+              ":val": { S: "Complete" },
+            },
+          };
+          locationResp = await update_dynamo_item(locationParams);
+        }
+      }
+
+      console.log(
+        "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
+        locationResp
+      );
 
       log(correlationId, JSON.stringify(event), 200);
       log(correlationId, JSON.stringify(locationResp), 200);
