@@ -18,15 +18,15 @@ exports.handler = async (event) => {
   };
 
   try {
-    const data = await sqs.receiveMessage(params).promise();
-    if (data.Messages) {
-      console.log(`Received ${data.Messages.length} messages:`);
-      data.Messages.forEach((message) => {
-        console.log(message.Body);
-      });
-    } else {
-      console.log("No messages received");
-    }
+    // const data = await sqs.receiveMessage(params).promise();
+    // if (data.Messages) {
+    //   console.log(`Received ${data.Messages.length} messages:`);
+    //   data.Messages.forEach((message) => {
+    //     console.log(message.Body);
+    //   });
+    // } else {
+    //   console.log("No messages received");
+    // }
 
     let dynamoPayload = JSON.parse(event.Records[0].body);
     const correlationId = dynamoPayload.correlationId;
