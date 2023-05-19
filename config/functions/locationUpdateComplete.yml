@@ -20,8 +20,8 @@ function:
     - stream:
         type: dynamodb
         arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.stream_arn}
-  #       filterPatterns:
-  #         - eventName: [INSERT]
+        filterPatterns:
+          - eventName: [MODIFY]
   environment:
     FUNCTION_NAME: omni-p44-location-update-complete-${self:provider.stage}
     SERVICE_NAME: ${self:service}
