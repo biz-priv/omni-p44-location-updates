@@ -79,7 +79,7 @@ module.exports.handler = async (event, context, callback) => {
           correlationId = queryResults[i].CorrelationId;
           log(correlationId, JSON.stringify(correlationId), 200);
 
-          console.log(`utcTimeStamp${i}=====>`, utcTimeStamp);
+          console.log(`utcTimeStamp ${i}=====>`, utcTimeStamp);
           const locationParams = {
             TableName: P44_LOCATION_UPDATE_TABLE,
             Key: {
