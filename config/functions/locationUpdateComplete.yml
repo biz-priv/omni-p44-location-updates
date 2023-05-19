@@ -1,0 +1,28 @@
+---
+function:
+  name: omni-p44-location-update-complete-${self:provider.stage}
+  handler: src/locationUpdateComplete/index.handler
+  description: Update Pending status to Complete - ${self:provider.stage}
+  runtime: nodejs14.x
+  layers:
+    - { Ref: CommonLibsLambdaLayer }
+  package:
+    include:
+      - src/locationUpdateComplete/index.js
+      - src/shared/helper.js
+      - src/shared/joiSchema.js
+      - src/shared/dynamoDb.js
+      - src/shared/logger.js
+    exclude:
+      - "**/*"
+  logSubscription: true
+  events:
+    - stream:
+        type: dynamodb
+        arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.stream_arn}
+  #       filterPatterns:
+  #         - eventName: [INSERT]
+  environment:
+    FUNCTION_NAME: omni-p44-location-update-complete-${self:provider.stage}
+    SERVICE_NAME: ${self:service}
+    APPLICATION: DataWarehouse
