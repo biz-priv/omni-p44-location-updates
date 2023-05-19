@@ -8,8 +8,7 @@ const {
   query_dynamo,
 } = require("../shared/dynamoDb");
 
-const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE, SF_TABLE_INDEX_KEY } =
-  process.env;
+const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE } = process.env;
 
 //=============>
 const AWS = require("aws-sdk");

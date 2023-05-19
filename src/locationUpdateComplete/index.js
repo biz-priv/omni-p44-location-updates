@@ -10,103 +10,123 @@ const {
 const { P44_SF_STATUS_TABLE, P44_LOCATION_UPDATE_TABLE } = process.env;
 
 //=============>
-// const AWS = require("aws-sdk");
-// var ddb = new AWS.DynamoDB.DocumentClient();
-// let items;
-// let queryResults = [];
+const AWS = require("aws-sdk");
+var ddb = new AWS.DynamoDB.DocumentClient();
+let items;
+let queryResults = [];
 let correlationId = "";
 
 module.exports.handler = async (event, context, callback) => {
   console.log("Event", JSON.stringify(event));
 
   const records = event.Records;
-  const houseBill = records[0].dynamodb.NewImage.HouseBillNo.S;
   const shipmentStatus = records[0].dynamodb.NewImage.ShipmentStatus.S;
-  console.log("houseBill", houseBill);
+  let locationResp;
 
-  // if (shipmentStatus === "Pending") {
-  //   try {
-  //     // For Sf_Status------------------------------------------------------------->
-  //     let sfDynamoPayload = {
-  //       HouseBillNo: houseBill,
-  //       StepFunctionStatus: "Complete",
-  //     };
-  //     sfDynamoPayload = marshall(sfDynamoPayload);
+  if (shipmentStatus === "Pending") {
+    try {
+      for (let i = 0; i < records.length; i++) {
+        console.log("loopCount==>", i);
+        try {
+          const houseBill = records[i].dynamodb.NewImage.HouseBillNo.S;
+          console.log("houseBill", houseBill);
 
-  //     const sfDltParams = {
-  //       TableName: P44_SF_STATUS_TABLE,
-  //       Key: {
-  //         HouseBillNo: { S: houseBill },
-  //         StepFunctionStatus: { S: "Pending" },
-  //       },
-  //     };
-  //     const sfParams = {
-  //       TableName: P44_SF_STATUS_TABLE,
-  //       Item: sfDynamoPayload,
-  //     };
+          // For Sf_Status------------------------------------------------------------->
+          let sfDynamoPayload = {
+            HouseBillNo: houseBill,
+            StepFunctionStatus: "Complete",
+          };
+          sfDynamoPayload = marshall(sfDynamoPayload);
 
-  //     console.log("sfDltParams", sfDltParams);
-  //     console.log("sfParams", sfParams);
+          const sfDltParams = {
+            TableName: P44_SF_STATUS_TABLE,
+            Key: {
+              HouseBillNo: { S: houseBill },
+              StepFunctionStatus: { S: "Pending" },
+            },
+          };
+          const sfParams = {
+            TableName: P44_SF_STATUS_TABLE,
+            Item: sfDynamoPayload,
+          };
 
-  //     // Query Location_Update ------------------------------------------------------>
-  //     const params = {
-  //       TableName: P44_LOCATION_UPDATE_TABLE,
-  //       IndexName: "shipment-status-index-dev",
-  //       KeyConditionExpression: "ShipmentStatus = :pk",
-  //       FilterExpression: "HouseBillNo = :val",
-  //       ExpressionAttributeValues: marshall({
-  //         ":pk": "Pending",
-  //         ":val": houseBill,
-  //       }),
-  //     };
-  //     const locationData = await query_dynamo(params);
-  //     console.log(locationData.Items);
+          console.log("sfDltParams", sfDltParams);
+          console.log("sfParams", sfParams);
 
-  //     console.log(locationData.Items.length);
-  //     console.log("Location_Query_Params", params);
+          // Query Location_Update ------------------------------------------------------>
+          const params = {
+            TableName: P44_LOCATION_UPDATE_TABLE,
+            IndexName: "shipment-status-index-dev",
+            KeyConditionExpression: "ShipmentStatus = :pk",
+            FilterExpression: "HouseBillNo = :val",
+            ExpressionAttributeValues: {
+              ":pk": "Pending",
+              ":val": houseBill,
+            },
+            limit: 100,
+          };
+          console.log("Location_Query_Params", params);
 
-  //     // Update Sf_Status------------------------------------------------------------>
-  //     const sfDlt = await delete_dynamo_item(sfDltParams);
-  //     const sfResp = await put_dynamo(sfParams);
-  //     console.log("Udated Successfully in P44_SF_STATUS_TABLE");
+          do {
+            items = await ddb.query(params).promise();
+            items.Items.forEach((item) => queryResults.push(item));
+            params.ExclusiveStartKey = items.LastEvaluatedKey;
+          } while (typeof items.LastEvaluatedKey != "undefined");
 
-  //     // Update Location_Updates------------------------------------------------------------>
-  //     let locationResp;
-  //     if (locationData.Items.length > 0) {
-  //       for (let i = 0; i < locationData.Items.length; i++) {
-  //         const utcTimeStamp = locationData.Items[i].UTCTimeStamp;
-  //         correlationId = locationData.Items[i].CorrelationId;
-  //         log(correlationId, JSON.stringify(correlationId), 200);
+          const locationData = queryResults;
+          const filterdLocationData = locationData.filter(
+            (data) => data.HouseBillNo === houseBill
+          );
+          // console.log("locationData", JSON.stringify(locationData));
+          console.log(
+            "filterdLocationData",
+            JSON.stringify(filterdLocationData)
+          );
 
-  //         console.log(`utcTimeStamp${i}=====>`, utcTimeStamp);
-  //         const locationParams = {
-  //           TableName: P44_LOCATION_UPDATE_TABLE,
-  //           Key: {
-  //             HouseBillNo: { S: houseBill },
-  //             UTCTimeStamp: { S: utcTimeStamp },
-  //           },
-  //           UpdateExpression: "SET #attr = :val",
-  //           ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
-  //           ExpressionAttributeValues: {
-  //             ":val": { S: "Complete" },
-  //           },
-  //         };
-  //         locationResp = await update_dynamo_item(locationParams);
-  //       }
-  //     }
+          // Update Sf_Status------------------------------------------------------------>
+          const sfDlt = await delete_dynamo_item(sfDltParams);
+          const sfResp = await put_dynamo(sfParams);
+          console.log("Udated Successfully in P44_SF_STATUS_TABLE");
 
-  //     console.log(
-  //       "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
-  //       locationResp
-  //     );
+          // Update Location_Updates------------------------------------------------------------>
+          if (filterdLocationData.length > 0) {
+            for (let j = 0; j < filterdLocationData.length; j++) {
+              const utcTimeStamp = filterdLocationData[j].UTCTimeStamp;
+              correlationId = filterdLocationData[j].CorrelationId;
+              log(correlationId, JSON.stringify(correlationId), 200);
 
-  //     log(correlationId, JSON.stringify(event), 200);
-  //     log(correlationId, JSON.stringify(locationResp), 200);
-  //     await logUtilization(correlationId);
-  //     return { Msg: "Statue Update Success" };
-  //   } catch (error) {
-  //     console.log("Error", error);
-  //     return callback(response("[400]", "Status Update Failed"));
-  //   }
-  // }
+              console.log(`utcTimeStamp ${j}=====>`, utcTimeStamp);
+              const locationParams = {
+                TableName: P44_LOCATION_UPDATE_TABLE,
+                Key: {
+                  HouseBillNo: { S: houseBill },
+                  UTCTimeStamp: { S: utcTimeStamp },
+                },
+                UpdateExpression: "SET #attr = :val",
+                ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
+                ExpressionAttributeValues: {
+                  ":val": { S: "Complete" },
+                },
+              };
+              locationResp = await update_dynamo_item(locationParams);
+            }
+          }
+
+          console.log(
+            "Udated Successfully in P44_LOCATION_UPDATE_TABLE",
+            locationResp
+          );
+        } catch (error) {
+          console.log("Error", error);
+        }
+      }
+      log(correlationId, JSON.stringify(event), 200);
+      log(correlationId, JSON.stringify(locationResp), 200);
+      await logUtilization(correlationId);
+      return { Msg: "Statue Update Success" };
+    } catch (error) {
+      console.log("Error", error);
+      return callback(response("[400]", "Status Update Failed"));
+    }
+  }
 };
