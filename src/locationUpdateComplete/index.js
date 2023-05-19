@@ -44,7 +44,7 @@ module.exports.handler = async (event, context, callback) => {
       console.log("sfParams", sfParams);
       const sfDlt = await delete_dynamo_item(sfDltParams);
       const sfResp = await put_dynamo(sfParams);
-      console.log("Udated Successfully in P44_SF_STATUS_TABLE", locationResp);
+      console.log("Udated Successfully in P44_SF_STATUS_TABLE");
 
       const params = {
         TableName: P44_LOCATION_UPDATE_TABLE,
