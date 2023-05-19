@@ -64,7 +64,8 @@ module.exports.handler = async (event, context, callback) => {
           }
         } catch (error) {
           console.error(error);
-          return callback(response("[400]", "Failed"));
+          // return callback(response("[400]", "Failed"));
+          throw "Not an Insert Event";
         }
       } else {
         throw "Not an Insert Event";
