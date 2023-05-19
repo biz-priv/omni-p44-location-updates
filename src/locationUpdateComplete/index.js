@@ -105,7 +105,7 @@ module.exports.handler = async (event, context, callback) => {
       return { Msg: "Statue Update Success" };
     } catch (error) {
       console.log("Error", error);
-      return callback(response("[400]", "Statue Update Failed"));
+      return callback(response("[400]", "Status Update Failed"));
     }
   }
 };

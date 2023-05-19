@@ -2,6 +2,7 @@ const AWS = require("aws-sdk");
 const stepfunctions = new AWS.StepFunctions();
 const { STEP_FUNCTION_ARN } = process.env;
 const { log, logUtilization } = require("../shared/logger");
+const { response } = require("../shared/helper");
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -13,6 +14,8 @@ module.exports.handler = async (event, context, callback) => {
       "Yet to be Processed"
   ) {
     await startP44LocationStepFn(event);
+  } else {
+    return callback(response("[400]", "Can't run the Step-Function"));
   }
 };
 

@@ -4,6 +4,7 @@ const sqs = new AWS.SQS();
 const moment = require("moment-timezone");
 const { put_dynamo } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");
+const { response } = require("../shared/helper");
 
 const { P44_LOCATION_UPDATE_TABLE, P44_SQS_QUEUE_URL } = process.env;
 
@@ -58,7 +59,8 @@ exports.handler = async (event) => {
     const res = await put_dynamo(dynamoParams);
     console.log("res", JSON.stringify(res));
     log(correlationId, JSON.stringify(res), 200);
-  } catch (err) {
-    console.log("Error", err);
+  } catch (error) {
+    console.log("Error", error);
+    return callback(response("[400]", error));
   }
 };
