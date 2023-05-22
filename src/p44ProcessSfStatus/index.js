@@ -15,7 +15,7 @@ module.exports.handler = async (event, context, callback) => {
       records[i].eventName === "INSERT" &&
       records[i].dynamodb.Keys.StepFunctionStatus.S === "Yet to be Processed"
     ) {
-      await startP44LocationStepFn(event);
+      await startP44LocationStepFn(records[i]);
     } else {
       // return callback(response("[400]", "Not an Insert Event"));
       console.log(
