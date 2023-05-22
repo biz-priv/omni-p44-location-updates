@@ -22,7 +22,7 @@ module.exports.handler = async (event, context, callback) => {
   const stepEvent = event;
 
   try {
-    let keys = stepEvent.Records[0].dynamodb.Keys;
+    let keys = stepEvent.dynamodb.Keys;
     const houseBill = keys.HouseBillNo.S;
     const sfStatus = keys.StepFunctionStatus.S;
     let locationStatus = "";
