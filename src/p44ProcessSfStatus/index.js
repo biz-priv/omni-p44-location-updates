@@ -6,16 +6,22 @@ const { response } = require("../shared/helper");
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
+  const records = event.Records;
   // const correlationId = event.Records[0].NewImage.CorrelationId.S;
   // log(correlationId, JSON.stringify(event), 200);
-  if (
-    event.Records[0].eventName === "INSERT" &&
-    event.Records[0].dynamodb.Keys.StepFunctionStatus.S ===
-      "Yet to be Processed"
-  ) {
-    await startP44LocationStepFn(event);
-  } else {
-    return callback(response("[400]", "Can't run the Step-Function"));
+  for (let i = 0; i < records.length; i++) {
+    console.log("LoopCount===>", i);
+    if (
+      records[i].eventName === "INSERT" &&
+      records[i].dynamodb.Keys.StepFunctionStatus.S === "Yet to be Processed"
+    ) {
+      await startP44LocationStepFn(event);
+    } else {
+      // return callback(response("[400]", "Not an Insert Event"));
+      console.log(
+        `StepFunctionStatus is ${records[i].dynamodb.Keys.StepFunctionStatus.S}`
+      );
+    }
   }
 };
 

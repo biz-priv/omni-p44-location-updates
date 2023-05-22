@@ -8,7 +8,7 @@ const { response } = require("../shared/helper");
 
 const { P44_LOCATION_UPDATE_TABLE } = process.env;
 
-exports.handler = async (event) => {
+exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
   const records = event.Records;
   try {
