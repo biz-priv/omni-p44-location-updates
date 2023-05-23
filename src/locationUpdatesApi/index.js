@@ -47,6 +47,7 @@ module.exports.handler = async (event, context, callback) => {
     return callback(response("[400]", error));
   }
 };
+//
 
 function isArray(a) {
   return !!a && a.constructor === Array;
