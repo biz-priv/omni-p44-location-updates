@@ -93,7 +93,7 @@ module.exports.handler = async (event, context, callback) => {
             for (let j = 0; j < filterdLocationData.length; j++) {
               const utcTimeStamp = filterdLocationData[j].UTCTimeStamp;
               correlationId = filterdLocationData[j].CorrelationId;
-              log(correlationId, JSON.stringify(correlationId), 200);
+              log(correlationId, JSON.stringify(utcTimeStamp), 200);
 
               console.log(`utcTimeStamp ${j}=====>`, utcTimeStamp);
               const locationParams = {
@@ -120,9 +120,9 @@ module.exports.handler = async (event, context, callback) => {
           console.log("Error", error);
         }
       }
+      await logUtilization(correlationId);
       log(correlationId, JSON.stringify(event), 200);
       log(correlationId, JSON.stringify(locationResp), 200);
-      await logUtilization(correlationId);
       return { Msg: "Statue Update Success" };
     } catch (error) {
       console.log("Error", error);

@@ -73,6 +73,7 @@ module.exports.handler = async (event, context, callback) => {
     for (let i = 0; i < locationData.Items.length; i++) {
       console.log("LoopCount", i);
       const correlationId = locationData.Items[i].CorrelationId.S;
+      await logUtilization(correlationId);
       log(correlationId, JSON.stringify(event), 200);
 
       const p44Payload = {
@@ -90,6 +91,7 @@ module.exports.handler = async (event, context, callback) => {
         eventType: "POSITION",
       };
       console.log("p44Payload", p44Payload);
+      log(correlationId, JSON.stringify(p44Payload), 200);
 
       const options = {
         method: "POST",

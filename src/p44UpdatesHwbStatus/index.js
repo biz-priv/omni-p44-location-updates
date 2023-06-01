@@ -89,7 +89,7 @@ module.exports.handler = async (event, context, callback) => {
       for (let i = 0; i < locationData.length; i++) {
         const utcTimeStamp = locationData[i].UTCTimeStamp;
         correlationId = locationData[i].CorrelationId;
-        log(correlationId, JSON.stringify(correlationId), 200);
+        log(correlationId, JSON.stringify(utcTimeStamp), 200);
 
         console.log(`utcTimeStamp ${i}=====>`, utcTimeStamp);
         const locationParams = {
