@@ -8,7 +8,7 @@ const {
   query_dynamo,
 } = require("../shared/dynamoDb");
 
-const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE } = process.env;
+const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE,P44_LOCATION_UPDATE_TABLE_INDEX } = process.env;
 
 //=============>
 const AWS = require("aws-sdk");
@@ -54,7 +54,7 @@ module.exports.handler = async (event, context, callback) => {
     // Query Location updates --------------------------------------------------------------------------------------------->
     const params = {
       TableName: P44_LOCATION_UPDATE_TABLE,
-      IndexName: "shipment-status-index-dev",
+      IndexName: P44_LOCATION_UPDATE_TABLE_INDEX,
       KeyConditionExpression: "ShipmentStatus = :pk",
       FilterExpression: "HouseBillNo = :val",
       ExpressionAttributeValues: {

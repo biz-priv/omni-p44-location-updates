@@ -6,6 +6,9 @@ const {
   P44_API_URL,
   REFERENCE_TABLE,
   SHIPMENT_HEADER_TABLE,
+  SHIPMENT_HEADER_TABLE_INDEX,
+  REFERENCE_TABLE_INDEX,
+  P44_LOCATION_UPDATE_TABLE_INDEX
 } = process.env;
 const { log, logUtilization } = require("../shared/logger");
 
@@ -19,7 +22,7 @@ module.exports.handler = async (event, context, callback) => {
   try {
     const shipmentParams = {
       TableName: SHIPMENT_HEADER_TABLE,
-      IndexName: "Housebill-index",
+      IndexName: SHIPMENT_HEADER_TABLE_INDEX,
       KeyConditionExpression: "Housebill = :pk",
       ExpressionAttributeValues: marshall({
         ":pk": houseBill,
@@ -38,7 +41,7 @@ module.exports.handler = async (event, context, callback) => {
 
     const refParams = {
       TableName: REFERENCE_TABLE,
-      IndexName: "omni-wt-rt-ref-orderNo-index-prod",
+      IndexName: REFERENCE_TABLE_INDEX,
       KeyConditionExpression: "FK_OrderNo = :order_no",
       FilterExpression:
         "CustomerType = :customer_type AND FK_RefTypeId IN (:ref_type1, :ref_type2)",
@@ -57,7 +60,7 @@ module.exports.handler = async (event, context, callback) => {
 
     const params = {
       TableName: P44_LOCATION_UPDATE_TABLE,
-      IndexName: "shipment-status-index-dev",
+      IndexName: P44_LOCATION_UPDATE_TABLE_INDEX,
       KeyConditionExpression: "ShipmentStatus = :pk",
       FilterExpression: "HouseBillNo = :val",
       ExpressionAttributeValues: marshall({

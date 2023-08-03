@@ -2,7 +2,7 @@ const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo, put_dynamo } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
-const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE } =
+const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE,SHIPMENT_HEADER_TABLE_INDEX } =
   process.env;
 
 module.exports.handler = async (event, context, callback) => {
@@ -24,7 +24,7 @@ module.exports.handler = async (event, context, callback) => {
         try {
           const params = {
             TableName: SHIPMENT_HEADER_TABLE,
-            IndexName: "Housebill-index",
+            IndexName: SHIPMENT_HEADER_TABLE_INDEX,
             KeyConditionExpression: "Housebill = :pk",
             ExpressionAttributeValues: marshall({
               ":pk": houseBill,

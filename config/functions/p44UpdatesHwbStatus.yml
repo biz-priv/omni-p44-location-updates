@@ -18,6 +18,7 @@ function:
   environment:
     P44_SF_STATUS_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
     SF_TABLE_INDEX_KEY: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stepFunctionStatus_index}
+    P44_LOCATION_UPDATE_TABLE_INDEX: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.shipmentStatus_index}
     FUNCTION_NAME: omni-p44-update-hwb-status-${self:provider.stage}
     SERVICE_NAME: ${self:service}
     APPLICATION: DataWarehouse

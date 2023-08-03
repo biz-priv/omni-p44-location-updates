@@ -28,22 +28,20 @@ module.exports.handler = async (event, context, callback) => {
 async function startP44LocationStepFn(event) {
   console.log("event", event);
 
-  return new Promise(async (resolve, reject) => {
-    try {
-      const params = {
-        stateMachineArn: STEP_FUNCTION_ARN,
-        input: JSON.stringify(event),
-      };
+  try {
+    const params = {
+      stateMachineArn: STEP_FUNCTION_ARN,
+      input: JSON.stringify(event),
+    };
 
-      const response = await stepfunctions.startExecution(params).promise();
+    const response = await stepfunctions.startExecution(params).promise();
 
-      console.log("Response", response);
-      console.log("P44 Location Updates STEP-Function started");
-      resolve(true);
-    } catch (error) {
-      console.log("Error", error);
-      console.log("P44 Location Updates STEP-Function failed");
-      resolve(false);
-    }
-  });
+    console.log("Response", response);
+    console.log("P44 Location Updates STEP-Function started");
+    return true;
+  } catch (error) {
+    console.log("Error", error);
+    console.log("P44 Location Updates STEP-Function failed");
+    return false;
+  }
 }

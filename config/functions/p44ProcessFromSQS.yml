@@ -15,7 +15,7 @@ function:
   logSubscription: true
   events:
     - sqs:
-        arn: arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-${self:provider.stage}
+        arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/SQS.queue_arn}
         batchSize: 10
         maximumBatchingWindow: 60
         functionResponseType: ReportBatchItemFailures
