@@ -89,14 +89,16 @@ custom:
   dev:
     domainname: dev-api.omnilogistics.com
     version: v1
+    certificateArn: ${ssm:/omni-p44/location-updates/dev/certificate/arn}
   prod:
     domainname: api.omnilogistics.com
     version: v1
+    certificateArn: ${ssm:/omni-p44/location-updates/prod/certificate/arn}
 
   customDomain:
     domainName: ${self:custom.${self:provider.stage}.domainname}
     basePath: "v1/location"
-    certificateArn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/certificate/arn}
+    certificateArn: ${self:custom.${self:provider.stage}.certificateArn}
 
 
     
