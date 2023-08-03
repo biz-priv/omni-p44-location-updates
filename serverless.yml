@@ -134,10 +134,10 @@ resources:
           Ref: "ApiGatewayRestApi"
         StatusCode: "401"
 
-    # # P44 Queue
-    # LocationUpdatesP44DLQ: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesP44DLQ}
-    # LocationUpdatesP44Queue: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesP44Queue}
-    # LocationUpdatesTargetQueuePolicy: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesTargetQueuePolicy}
+    # P44 Queue
+    LocationUpdatesP44DLQ: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesP44DLQ}
+    LocationUpdatesP44Queue: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesP44Queue}
+    LocationUpdatesTargetQueuePolicy: ${file(config/queues/locationUpdatesP44Queue.yml):LocationUpdatesTargetQueuePolicy}
 
     # P44 Dynamo Tables
     P44ShipmentLocationUpdates: ${file(config/dynamoDb/P44ShipmentLocationUpdates.yml):P44ShipmentLocationUpdates}
