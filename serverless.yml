@@ -3,6 +3,8 @@ service: omni-p44-location-updates
 provider:
   name: aws
   runtime: nodejs14.x
+  apiKeys:
+    - omni-p44-location-${self:provider.stage}
   versionFunctions: true
   stage: ${opt:stage, 'dev'}
   region: us-east-1
