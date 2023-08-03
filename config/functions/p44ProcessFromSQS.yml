@@ -15,7 +15,7 @@ function:
   logSubscription: true
   events:
     - sqs:
-        arn: { "Fn::GetAtt": ["LocationUpdatesP44Queue", "Arn"] }
+        arn: arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-${self:provider.stage}
         batchSize: 10
         maximumBatchingWindow: 60
         functionResponseType: ReportBatchItemFailures
