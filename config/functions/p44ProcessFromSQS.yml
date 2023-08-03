@@ -3,7 +3,7 @@ function:
   name: omni-p44-process-from-sqs-${self:provider.stage}
   handler: src/p44ProcessFromSQS/index.handler
   description: P44 Process From SQS - ${self:provider.stage}
-  runtime: nodejs18.x
+  runtime: nodejs14.x
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:
@@ -15,7 +15,7 @@ function:
   logSubscription: true
   events:
     - sqs:
-        arn: { "Fn::GetAtt": ["LocationUpdatesP44Queue", "Arn"] }
+        arn: arn:aws:sqs:us-east-1:332281781429:omni-p44-location-updates-queue-${self:provider.stage}
         batchSize: 10
         maximumBatchingWindow: 60
         functionResponseType: ReportBatchItemFailures
