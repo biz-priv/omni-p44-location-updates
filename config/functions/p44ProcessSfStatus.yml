@@ -1,6 +1,6 @@
 ---
 function:
-  name: omni-p44-process-ddb-sf-status-${self:custom.${self:provider.stage}.version}-${self:provider.stage}
+  name: omni-p44-process-ddb-sf-status-${self:provider.stage}
   handler: src/p44ProcessSfStatus/index.handler
   description: P44 Process From SF DynamoDB Streams - ${self:provider.stage}
   runtime: nodejs14.x

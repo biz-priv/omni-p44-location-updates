@@ -1,6 +1,6 @@
 ---
 function:
-  name: omni-p44-location-update-complete-${self:custom.${self:provider.stage}.version}-${self:provider.stage}
+  name: omni-p44-location-update-complete-${self:provider.stage}
   handler: src/locationUpdateComplete/index.handler
   description: Update Pending status to Complete - ${self:provider.stage}
   runtime: nodejs14.x

@@ -1,6 +1,6 @@
 ---
 function:
-  name: omni-p44-process-dynamo-streams-${self:custom.${self:provider.stage}.version}-${self:provider.stage}
+  name: omni-p44-process-dynamo-streams-${self:provider.stage}
   handler: src/p44ProcessDynamoStreams/index.handler
   description: P44 Process From DynamoDB Streams - ${self:provider.stage}
   runtime: nodejs14.x
