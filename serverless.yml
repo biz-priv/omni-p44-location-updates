@@ -96,7 +96,8 @@ custom:
   customDomain:
     domainName: ${self:custom.${self:provider.stage}.domainname}
     basePath: "v1/location"
-    certificateArn: arn:aws:acm:us-east-1:332281781429:certificate/c345e024-4817-49fd-8c05-46be573a4f8a
+    certificateArn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/certificate/arn}
+
 
     
   standardResponseHeaders:
