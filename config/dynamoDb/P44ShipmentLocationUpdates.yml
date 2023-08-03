@@ -1,0 +1,26 @@
+P44ShipmentLocationUpdates:
+  Type: AWS::DynamoDB::Table
+  Properties:
+    TableName: omni-p44-shipment-location-updates-${self:provider.stage}
+    BillingMode: PAY_PER_REQUEST
+    AttributeDefinitions:
+      - AttributeName: "HouseBillNo"
+        AttributeType: "S"
+      - AttributeName: "UTCTimeStamp"
+        AttributeType: "S"
+      - AttributeName: "ShipmentStatus"
+        AttributeType: "S"
+    KeySchema:
+      - AttributeName: "HouseBillNo"
+        KeyType: HASH
+      - AttributeName: "UTCTimeStamp"
+        KeyType: RANGE
+    GlobalSecondaryIndexes:
+      - IndexName: shipment-status-index-${self:provider.stage}
+        KeySchema:
+          - AttributeName: ShipmentStatus
+            KeyType: HASH
+        Projection:
+          ProjectionType: ALL
+    StreamSpecification:
+      StreamViewType: NEW_AND_OLD_IMAGES

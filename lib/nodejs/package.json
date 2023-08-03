@@ -1,0 +1,20 @@
+{
+  "name": "omni-p44-location-updates",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "joi": "^17.9.2",
+    "log4js": "^6.9.1",
+    "moment-timezone": "^0.5.43",
+    "moment": "^2.29.4",
+    "@aws-sdk/client-dynamodb": "^3.325.0",
+    "@aws-sdk/util-dynamodb": "^3.303.0",
+    "axios": "^1.4.0"
+  }
+}

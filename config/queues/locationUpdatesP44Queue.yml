@@ -1,0 +1,27 @@
+LocationUpdatesP44DLQ:
+  Type: AWS::SQS::Queue
+  Properties:
+    QueueName: omni-p44-location-updates-DLQ-${self:provider.stage}
+
+LocationUpdatesP44Queue:
+  Type: AWS::SQS::Queue
+  Properties:
+    QueueName: omni-p44-location-updates-queue-${self:provider.stage}
+    VisibilityTimeout: 90
+    RedrivePolicy:
+      deadLetterTargetArn: !GetAtt LocationUpdatesP44DLQ.Arn
+      maxReceiveCount: 3
+
+LocationUpdatesTargetQueuePolicy:
+  Type: "AWS::SQS::QueuePolicy"
+  Properties:
+    Queues:
+      - !Ref LocationUpdatesP44Queue
+    PolicyDocument:
+      Version: "2012-10-17"
+      Statement:
+        - Effect: "Allow"
+          Principal:
+            Service: "lambda.amazonaws.com"
+          Action: "sqs:SendMessage"
+          Resource: !GetAtt LocationUpdatesP44Queue.Arn

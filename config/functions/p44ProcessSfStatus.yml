@@ -1,0 +1,30 @@
+---
+function:
+  name: omni-p44-process-ddb-sf-status-${self:provider.stage}
+  handler: src/p44ProcessSfStatus/index.handler
+  description: P44 Process From SF DynamoDB Streams - ${self:provider.stage}
+  runtime: nodejs14.x
+  layers:
+    - { Ref: CommonLibsLambdaLayer }
+  package:
+    include:
+      - src/p44ProcessSfStatus/index.js
+      - src/shared/helper.js
+      - src/shared/joiSchema.js
+      - src/shared/dynamoDb.js
+      - src/shared/logger.js
+    exclude:
+      - "**/*"
+  logSubscription: true
+  events:
+    - stream:
+        type: dynamodb
+        arn:
+          Fn::GetAtt: [P44SfStatus, StreamArn]
+        filterPatterns:
+          - eventName: [INSERT]
+  environment:
+    STEP_FUNCTION_ARN: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/state_machine_arn}
+    FUNCTION_NAME: omni-p44-process-ddb-sf-status-${self:provider.stage}
+    SERVICE_NAME: ${self:service}
+    APPLICATION: DataWarehouse
