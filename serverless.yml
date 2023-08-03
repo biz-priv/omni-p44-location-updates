@@ -142,3 +142,7 @@ resources:
     # P44 Dynamo Tables
     P44ShipmentLocationUpdates: ${file(config/dynamoDb/P44ShipmentLocationUpdates.yml):P44ShipmentLocationUpdates}
     P44SfStatus: ${file(config/dynamoDb/P44SfStatus.yml):P44SfStatus}
+
+    # ssm parameter
+    P44SfStatusTableStreamArn: ${file(config/ssm/dynamoStreamsSsm.yml):P44SfStatusTableStreamArn}
+    P44ShipmentLocationUpdatesTableStreamArn: ${file(config/ssm/dynamoStreamsSsm.yml):P44ShipmentLocationUpdatesTableStreamArn}

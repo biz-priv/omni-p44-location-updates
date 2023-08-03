@@ -19,7 +19,7 @@ function:
   events:
     - stream:
         type: dynamodb
-        arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.stream_arn}
+        arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/P44ShipmentLocationUpdates/ddb.streamArn}
         filterPatterns:
           - eventName: [MODIFY]
   environment:

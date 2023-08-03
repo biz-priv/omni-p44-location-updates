@@ -1,0 +1,21 @@
+P44SfStatusTableStreamArn:
+  Type: AWS::SSM::Parameter
+  DependsOn: P44SfStatus
+  Properties:
+    Name: /omni-p44/location-updates/${self:provider.stage}/P44SfStatus/ddb.streamArn
+    Type: String
+    Value:
+      Fn::GetAtt:
+        - P44SfStatus
+        - StreamArn
+
+P44ShipmentLocationUpdatesTableStreamArn:
+  Type: AWS::SSM::Parameter
+  DependsOn: P44SfStatus
+  Properties:
+    Name: /omni-p44/location-updates/${self:provider.stage}/P44ShipmentLocationUpdates/ddb.streamArn
+    Type: String
+    Value:
+      Fn::GetAtt:
+        - P44ShipmentLocationUpdates
+        - StreamArn        
