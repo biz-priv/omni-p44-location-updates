@@ -68,6 +68,7 @@ plugins:
   - serverless-offline
   - serverless-plugin-log-subscription
   - serverless-step-functions
+  - serverless-domain-manager
 
 functions:
   locationUpdatesApi: ${file(config/functions/locationUpdates.yml):function}
@@ -83,6 +84,19 @@ stepFunctions:
     p44-process-location-updates-state-machine: ${file(config/stepFunctions/p44-process-location-updates-state-machine.yml):stateMachine}
 
 custom:
+  dev:
+    domainname: dev-api.omnilogistics.com
+    version: v1
+  prod:
+    domainname: api.omnilogistics.com
+    version: v1
+
+  customDomain:
+    domainName: ${self:custom.${self:provider.stage}.domainname}
+    basePath: "v1/location"
+    certificateArn: arn:aws:acm:us-east-1:332281781429:certificate/c345e024-4817-49fd-8c05-46be573a4f8a
+
+    
   standardResponseHeaders:
     "Access-Control-Allow-Origin": "'*'"
     "Access-Control-Allow-Credentials": "'true'"
@@ -142,7 +156,3 @@ resources:
     # P44 Dynamo Tables
     P44ShipmentLocationUpdates: ${file(config/dynamoDb/P44ShipmentLocationUpdates.yml):P44ShipmentLocationUpdates}
     P44SfStatus: ${file(config/dynamoDb/P44SfStatus.yml):P44SfStatus}
-
-    # ssm parameter
-    P44SfStatusTableStreamArn: ${file(config/ssm/dynamoStreamsSsm.yml):P44SfStatusTableStreamArn}
-    P44ShipmentLocationUpdatesTableStreamArn: ${file(config/ssm/dynamoStreamsSsm.yml):P44ShipmentLocationUpdatesTableStreamArn}

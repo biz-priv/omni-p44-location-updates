@@ -1,6 +1,6 @@
 ---
 function:
-  name: omni-p44-send-events-${self:provider.stage}
+  name: omni-p44-send-events-${self:custom.${self:provider.stage}.version}-${self:provider.stage}
   handler: src/p44SendEvents/index.handler
   description: part of omni-p44-process-location-updates-${self:provider.stage} sf that sends events to p44 API
   runtime: nodejs14.x
@@ -16,13 +16,13 @@ function:
       - "**/*"
   logSubscription: true
   environment:
-    SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/prod/shipment-header/ddb.tableName~true}
-    REFERENCE_TABLE: ${ssm:/omni-wt-rt-updates/prod/references/ddb.tableName~true}
-    P44_LOCATION_UPDATE_TABLE_INDEX: ${ssm:/omni-p44/location-updates/prod/source/ddb.shipmentStatus_index}
-    REFERENCE_TABLE_INDEX: ${ssm:/omni-wt-rt-updates/prod/references/ddb.orderNoIndex}
+    SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/shipment-header/ddb.tableName~true}
+    REFERENCE_TABLE: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/references/ddb.tableName~true}
+    P44_LOCATION_UPDATE_TABLE_INDEX: ${ssm:/omni-p44/location-updates/${self:provider.stage}/source/ddb.shipmentStatus_index}
+    REFERENCE_TABLE_INDEX: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/references/ddb.orderNoIndex}
     SF_TABLE_INDEX_KEY: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stepFunctionStatus_index}
     P44_API_URL: ${ssm:/omni-p44-rt-updates/${self:provider.stage}/api/statusUpdates}
-    SHIPMENT_HEADER_TABLE_INDEX: ${ssm:/omni-dw/prod/shipment-header-index/ddb.tableIndex}
+    SHIPMENT_HEADER_TABLE_INDEX: ${ssm:/omni-dw/${self:provider.stage}/shipment-header-index/ddb.tableIndex}
     FUNCTION_NAME: omni-p44-send-events-${self:provider.stage}
     SERVICE_NAME: ${self:service}
     APPLICATION: DataWarehouse

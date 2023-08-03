@@ -1,6 +1,6 @@
 ---
 function:
-  name: omni-p44-process-dynamo-streams-${self:provider.stage}
+  name: omni-p44-process-dynamo-streams-${self:custom.${self:provider.stage}.version}-${self:provider.stage}
   handler: src/p44ProcessDynamoStreams/index.handler
   description: P44 Process From DynamoDB Streams - ${self:provider.stage}
   runtime: nodejs14.x
@@ -16,11 +16,13 @@ function:
   events:
     - stream:
         type: dynamodb
-        arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/P44ShipmentLocationUpdates/ddb.streamArn}
+        arn:
+          Fn::GetAtt: [P44ShipmentLocationUpdates, StreamArn]
+
         filterPatterns:
           - eventName: [INSERT]
   environment:
-    SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/prod/shipment-header/ddb.tableName~true}
+    SHIPMENT_HEADER_TABLE: ${ssm:/omni-wt-rt-updates/${self:provider.stage}/shipment-header/ddb.tableName~true}
     SHIPMENT_HEADER_TABLE_INDEX: ${ssm:/omni-dw/${self:provider.stage}/shipment-header-index/ddb.tableIndex}
     P44_SF_STATUS_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
     LOCATION_UPDATE_SHIPMENT_STATUS_INDEX: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stepFunctionStatus_index}

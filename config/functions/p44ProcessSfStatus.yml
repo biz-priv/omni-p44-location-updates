@@ -1,6 +1,6 @@
 ---
 function:
-  name: omni-p44-process-ddb-sf-status-${self:provider.stage}
+  name: omni-p44-process-ddb-sf-status-${self:custom.${self:provider.stage}.version}-${self:provider.stage}
   handler: src/p44ProcessSfStatus/index.handler
   description: P44 Process From SF DynamoDB Streams - ${self:provider.stage}
   runtime: nodejs14.x
@@ -19,7 +19,8 @@ function:
   events:
     - stream:
         type: dynamodb
-        arn: ${ssm:/omni-p44/location-updates/${self:provider.stage}/P44SfStatus/ddb.streamArn}
+        arn:
+          Fn::GetAtt: [P44SfStatus, StreamArn]
         filterPatterns:
           - eventName: [INSERT]
   environment:
