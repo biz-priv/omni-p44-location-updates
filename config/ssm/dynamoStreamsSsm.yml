@@ -11,7 +11,7 @@ P44SfStatusTableStreamArn:
 
 P44ShipmentLocationUpdatesTableStreamArn:
   Type: AWS::SSM::Parameter
-  DependsOn: P44SfStatus
+  DependsOn: P44ShipmentLocationUpdates
   Properties:
     Name: /omni-p44/location-updates/${self:provider.stage}/P44ShipmentLocationUpdates/ddb.streamArn
     Type: String
