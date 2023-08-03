@@ -3,7 +3,7 @@ function:
   name: omni-p44-process-from-sqs-${self:provider.stage}
   handler: src/p44ProcessFromSQS/index.handler
   description: P44 Process From SQS - ${self:provider.stage}
-  runtime: nodejs14.x
+  runtime: nodejs18.x
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:
