@@ -1,0 +1,43 @@
+---
+function:
+  name: omni-location-updates-api-${self:custom.${self:provider.stage}.version}-${self:provider.stage}
+  handler: src/locationUpdatesApi/index.handler
+  description: P44 location Updates API - ${self:provider.stage}
+  runtime: nodejs14.x
+  layers:
+    - { Ref: CommonLibsLambdaLayer }
+  package:
+    include:
+      - src/locationUpdatesApi/index.js
+      - src/shared/helper.js
+      - src/shared/joiSchema.js
+      - src/shared/dynamoDb.js
+      - src/shared/logger.js
+    exclude:
+      - "**/*"
+  logSubscription: true
+  events:
+    - http:
+        path: /updates
+        method: POST
+        private: true
+        integration: lambda
+        response:
+          headers: ${self:custom.standardResponseHeaders}
+          statusCodes:
+            200:
+              pattern: ""
+            400:
+              pattern: '[\s\S]*\[400\][\s\S]*'
+              headers:
+                Content-Type: "'application/json'"
+              template: ${file(responseTemplate.vtl)}
+            500:
+              pattern: '[\s\S]*\[500\][\s\S]*'
+              headers:
+                Content-Type: "'application/json'"
+              template: ${file(responseTemplate.vtl)}
+  environment:
+    FUNCTION_NAME: omni-location-updates-api-${self:provider.stage}
+    SERVICE_NAME: ${self:service}
+    APPLICATION: DataWarehouse
