@@ -64,7 +64,7 @@ module.exports.handler = async (event, context, callback) => {
       KeyConditionExpression: "ShipmentStatus = :pk",
       FilterExpression: "HouseBillNo = :val",
       ExpressionAttributeValues: marshall({
-        ":pk": "Pending",
+        ":pk": "Complete",
         ":val": houseBill,
       }),
     };
