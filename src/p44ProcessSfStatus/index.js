@@ -2,6 +2,9 @@ const AWS = require("aws-sdk");
 const stepfunctions = new AWS.StepFunctions();
 const { STEP_FUNCTION_ARN } = process.env;
 const { log, logUtilization } = require("../shared/logger");
+const AWS = require("aws-sdk");
+const {SNS_TOPIC_ARN } = process.env;
+const sns = new AWS.SNS({ region: process.env.REGION });
 // const { response } = require("../shared/helper");
 
 module.exports.handler = async (event, context, callback) => {
@@ -42,6 +45,11 @@ async function startP44LocationStepFn(event) {
   } catch (error) {
     console.log("Error", error);
     console.log("P44 Location Updates STEP-Function failed");
+    const params = {
+			Message: `Error in ${functionName}, Error: ${error.Message}`,
+			TopicArn: SNS_TOPIC_ARN,
+		};
+    await sns.publish(params).promise();
     return false;
   }
 }

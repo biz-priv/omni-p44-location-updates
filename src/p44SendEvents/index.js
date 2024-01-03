@@ -1,6 +1,9 @@
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo } = require("../shared/dynamoDb");
 const { response, requester, authToken } = require("../shared/helper");
+const AWS = require("aws-sdk");
+const {SNS_TOPIC_ARN } = process.env;
+const sns = new AWS.SNS({ region: process.env.REGION });
 const {
   P44_LOCATION_UPDATE_TABLE,
   P44_API_URL,
@@ -112,6 +115,11 @@ module.exports.handler = async (event, context, callback) => {
     console.log("Response Send To P44 EndPoint");
   } catch (error) {
     console.log("Error", error);
+    const params = {
+			Message: `Error in ${functionName}, Error: ${error.Message}`,
+			TopicArn: SNS_TOPIC_ARN,
+		};
+    await sns.publish(params).promise();
     return callback(response("[400]", "Second Lambda Failed"));
   }
 };

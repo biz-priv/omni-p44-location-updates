@@ -5,6 +5,9 @@ const moment = require("moment-timezone");
 const { put_dynamo } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
+const AWS = require("aws-sdk");
+const {SNS_TOPIC_ARN } = process.env;
+const sns = new AWS.SNS({ region: process.env.REGION });
 
 const { P44_LOCATION_UPDATE_TABLE } = process.env;
 
@@ -53,6 +56,11 @@ exports.handler = async (event, context, callback) => {
     }
   } catch (error) {
     console.log("Error", error);
+    const params = {
+			Message: `Error in ${functionName}, Error: ${error.Message}`,
+			TopicArn: SNS_TOPIC_ARN,
+		};
+    await sns.publish(params).promise();
     return callback(response("[400]", error));
   }
 };
