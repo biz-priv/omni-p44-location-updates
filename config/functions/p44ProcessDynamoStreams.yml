@@ -30,3 +30,5 @@ function:
     FUNCTION_NAME: omni-p44-process-dynamo-streams-${self:provider.stage}
     SERVICE_NAME: ${self:service}
     APPLICATION: DataWarehouse
+    SNS_TOPIC_ARN: ${ssm:/omni-reports/${self:provider.stage}/error-notification/sns/arn}
+	  REGION: ${self:provider.region}
