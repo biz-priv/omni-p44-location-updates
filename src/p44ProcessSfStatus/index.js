@@ -46,7 +46,7 @@ async function startP44LocationStepFn(event) {
     console.log("Error", error);
     console.log("P44 Location Updates STEP-Function failed");
     const params = {
-			Message: `Error in ${functionName}, Error: ${error.Message}`,
+			Message: `Error in ${context.functionName}, Error: ${error.Message}`,
 			TopicArn: SNS_TOPIC_ARN,
 		};
     await sns.publish(params).promise();
