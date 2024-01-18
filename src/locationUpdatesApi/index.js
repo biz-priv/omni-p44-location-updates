@@ -2,11 +2,8 @@ const { send_message, response } = require("../shared/helper");
 const { locationUpdateSchema } = require("../shared/joiSchema");
 const { log, logUtilization } = require("../shared/logger");
 const { P44_SQS_QUEUE_URL } = process.env;
-const AWS = require("aws-sdk");
-const {SNS_TOPIC_ARN } = process.env;
-const sns = new AWS.SNS({ region: process.env.REGION });
 
-module.exports.handler = async (event, context, callback) => {
+module.exports.handler = async (event, callback) => {
   console.log("Event", JSON.stringify(event));
   console.log(process.env.DESTINATION);
 
@@ -46,11 +43,6 @@ module.exports.handler = async (event, context, callback) => {
       },
     };
   } catch (error) {
-    const params = {
-			Message: `Error in ${context.functionName}, Error: ${error.Message}`,
-			TopicArn: SNS_TOPIC_ARN,
-		};
-    await sns.publish(params).promise();
     log(correlationId, JSON.stringify(error), 200);
     return callback(response("[400]", error));
   }
