@@ -4,6 +4,9 @@ const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
 const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE,SHIPMENT_HEADER_TABLE_INDEX } =
   process.env;
+const AWS = require("aws-sdk");
+const {SNS_TOPIC_ARN } = process.env;
+const sns = new AWS.SNS({ region: process.env.REGION });
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -75,6 +78,11 @@ module.exports.handler = async (event, context, callback) => {
     }
   } catch (error) {
     console.log(error);
+    const params = {
+			Message: `Error in ${context.functionName}, Error: ${error.message}`,
+			TopicArn: SNS_TOPIC_ARN,
+		};
+    await sns.publish(params).promise();
     return callback(response("[400]", error));
   }
 };

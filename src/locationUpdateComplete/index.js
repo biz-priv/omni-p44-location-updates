@@ -8,6 +8,9 @@ const {
   query_dynamo,
 } = require("../shared/dynamoDb");
 const { P44_SF_STATUS_TABLE, P44_LOCATION_UPDATE_TABLE,P44_LOCATION_UPDATE_TABLE_INDEX } = process.env;
+const AWS = require("aws-sdk");
+const {SNS_TOPIC_ARN } = process.env;
+const sns = new AWS.SNS({ region: process.env.REGION });
 
 //=============>
 const AWS = require("aws-sdk");
@@ -126,6 +129,11 @@ module.exports.handler = async (event, context, callback) => {
       return { Msg: "Statue Update Success" };
     } catch (error) {
       console.log("Error", error);
+      const params = {
+        Message: `Error in ${context.functionName}, Error: ${error.message}`,
+        TopicArn: SNS_TOPIC_ARN,
+      };
+      await sns.publish(params).promise();
       return callback(response("[400]", "Status Update Failed"));
     }
   }
