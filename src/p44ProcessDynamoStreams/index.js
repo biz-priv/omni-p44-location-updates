@@ -1,8 +1,9 @@
 const { marshall } = require("@aws-sdk/util-dynamodb");
-const { query_dynamo, put_dynamo } = require("../shared/dynamoDb");
+const { query_dynamo, put_dynamo, update_dynamo_item } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
-const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE, SHIPMENT_HEADER_TABLE_INDEX } =
+const moment = require("moment-timezone");
+const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE, SHIPMENT_HEADER_TABLE_INDEX, P44_LOCATION_UPDATE_TABLE } =
   process.env;
 
 module.exports.handler = async (event, context, callback) => {
@@ -11,20 +12,21 @@ module.exports.handler = async (event, context, callback) => {
   const record = event.Records;
 
   try {
-    for (let i = 0; i < record.length; i++) {
+    await Promise.all(record.map(async (record, i) => {
       console.log("loopCount==>", i);
-      const houseBill = event.Records[i].dynamodb.NewImage.HouseBillNo?.S;
-      const correlationId = event.Records[i].dynamodb.NewImage.CorrelationId?.S;
-      if (!houseBill || !correlationId) {
+      const houseBill = record.dynamodb.NewImage.HouseBillNo?.S;
+      const utcTimestamp = record.dynamodb.NewImage.UTCTimeStamp?.S;
+      const correlationId = record.dynamodb.NewImage.CorrelationId?.S;
+      if (!houseBill || !correlationId || !utcTimestamp) {
         console.info("houseBill or correlationId is not present");
-        continue;
+        return;
       }
       await logUtilization(correlationId);
       log(correlationId, JSON.stringify(houseBill), 200);
 
       console.log("houseBill", houseBill);
 
-      if (event.Records[i].eventName === "INSERT") {
+      if (record.eventName === "INSERT") {
         try {
           const params = {
             TableName: SHIPMENT_HEADER_TABLE,
@@ -62,9 +64,54 @@ module.exports.handler = async (event, context, callback) => {
 
               const res = await put_dynamo(dynamoParams);
               // console.log("response", res);
+            } else {
+              const locationParams = {
+                TableName: P44_LOCATION_UPDATE_TABLE,
+                Key: {
+                  HouseBillNo: { S: houseBill },
+                  UTCTimeStamp: { S: utcTimestamp },
+                },
+                UpdateExpression: "SET #attr = :val, UpdatedAt = :updatedAt, Message = :message",
+                ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
+                ExpressionAttributeValues: {
+                  ":val": { S: "Skipped" },
+                  ":message": { S: `${billNumber} is not one of ${customerIds}` },
+                  ":updatedAt": {
+                    S: moment
+                      .tz("America/Chicago")
+                      .format("YYYY:MM:DD HH:mm:ss")
+                      .toString()
+                  }
+                },
+              };
+              console.info('🙂 -> file: index.js:125 -> module.exports.handler= -> locationParams:', locationParams);
+              const locationResp = await update_dynamo_item(locationParams);
+              console.info('🙂 -> file: index.js:126 -> module.exports.handler= -> locationResp:', locationResp);
             }
           } else {
             console.log("Ignored response");
+            const locationParams = {
+              TableName: P44_LOCATION_UPDATE_TABLE,
+              Key: {
+                HouseBillNo: { S: houseBill },
+                UTCTimeStamp: { S: utcTimestamp },
+              },
+              UpdateExpression: "SET #attr = :val, UpdatedAt = :updatedAt, Message = :message",
+              ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
+              ExpressionAttributeValues: {
+                ":val": { S: "Skipped" },
+                ":message": { S: "Data not oresent in shipment header table." },
+                ":updatedAt": {
+                  S: moment
+                    .tz("America/Chicago")
+                    .format("YYYY:MM:DD HH:mm:ss")
+                    .toString()
+                }
+              },
+            };
+            console.info('🙂 -> file: index.js:125 -> module.exports.handler= -> locationParams:', locationParams);
+            const locationResp = await update_dynamo_item(locationParams);
+            console.info('🙂 -> file: index.js:126 -> module.exports.handler= -> locationResp:', locationResp);
             // throw "Ignored response";
           }
         } catch (error) {
@@ -76,7 +123,7 @@ module.exports.handler = async (event, context, callback) => {
         // throw "Not an Insert Event";
         console.log("Ignored response");
       }
-    }
+    }));
   } catch (error) {
     console.log(error);
     return callback(response("[400]", error));

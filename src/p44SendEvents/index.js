@@ -10,9 +10,12 @@ const {
   SHIPMENT_HEADER_TABLE_INDEX,
   REFERENCE_TABLE_INDEX,
   P44_LOCATION_UPDATE_TABLE_INDEX,
-  P44_SF_STATUS_TABLE
+  P44_SF_STATUS_TABLE,
+  SNS_TOPIC_ARN
 } = process.env;
 const { log, logUtilization } = require("../shared/logger");
+const AWS = require("aws-sdk");
+const sns = new AWS.SNS({ region: process.env.REGION });
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -75,68 +78,101 @@ module.exports.handler = async (event, context, callback) => {
     console.log(locationData.Items.length);
 
     let sendResponse;
-    for (let i = 0; i < locationData.Items.length; i++) {
-      console.log("LoopCount", i);
-      const correlationId = locationData.Items[i].CorrelationId?.S;
-      await logUtilization(correlationId);
-      log(correlationId, JSON.stringify(event), 200);
-      const utcTimestamp = locationData.Items[i].UTCTimeStamp?.S
-      if (!correlationId || !utcTimestamp) {
-        console.info("CorrelationId or UTCTimeStamp is missing in the P44_LOCATION_UPDATE_TABLE");
-        continue
-      }
-      const p44Payload = {
-        shipmentIdentifiers: [
-          {
-            type: "BILL_OF_LADING",
-            value: value,
+    const promiseResponses = await Promise.all(locationData.Items.map(async (item, i) => {
+      let utcTimestamp;
+      let p44Payload;
+      try {
+        console.log("LoopCount", i);
+        const correlationId = item.CorrelationId?.S;
+        await logUtilization(correlationId);
+        log(correlationId, JSON.stringify(event), 200);
+        utcTimestamp = item.UTCTimeStamp?.S
+        if (!correlationId || !utcTimestamp) {
+          console.info("CorrelationId or UTCTimeStamp is missing in the P44_LOCATION_UPDATE_TABLE");
+          return 'SKIPPED'
+        }
+        p44Payload = {
+          shipmentIdentifiers: [
+            {
+              type: "BILL_OF_LADING",
+              value: value,
+            },
+          ],
+          latitude: item.latitude.N,
+          longitude: item.longitude.N,
+
+          utcTimestamp: utcTimestamp,
+          customerId: "MCKESSON",
+          eventType: "POSITION",
+        };
+        console.log("p44Payload", p44Payload);
+        log(correlationId, JSON.stringify(p44Payload), 200);
+        if (p44Payload.shipmentIdentifiers[0].value === '') {
+          throw { error: `Reference table data is missing for orderNumber: ${orderNumber}` }
+        }
+        const options = {
+          method: "POST",
+          data: p44Payload,
+          url: P44_API_URL,
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${accessToken}`,
           },
-        ],
-        latitude: locationData.Items[i].latitude.N,
-        longitude: locationData.Items[i].longitude.N,
+        };
 
-        utcTimestamp,
-        customerId: "MCKESSON",
-        eventType: "POSITION",
-      };
-      console.log("p44Payload", p44Payload);
-      log(correlationId, JSON.stringify(p44Payload), 200);
-
-      const options = {
-        method: "POST",
-        data: p44Payload,
-        url: P44_API_URL,
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      };
-
-      sendResponse = await requester(options);
-      console.log("sendResponse", sendResponse);
-      const locationParams = {
-        TableName: P44_LOCATION_UPDATE_TABLE,
-        Key: {
-          HouseBillNo: { S: houseBill },
-          UTCTimeStamp: { S: utcTimestamp },
-        },
-        UpdateExpression: "SET #attr = :val, Payload = :payload, UpdatedAt = :updatedAt",
-        ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
-        ExpressionAttributeValues: {
-          ":val": { S: "Complete" },
-          ":payload": { S: JSON.stringify(p44Payload) },
-          ":updatedAt": {
-            S: moment
-              .tz("America/Chicago")
-              .format("YYYY:MM:DD HH:mm:ss")
-              .toString()
-          }
-        },
-      };
-      console.info('🙂 -> file: index.js:125 -> module.exports.handler= -> locationParams:', locationParams);
-      const locationResp = await update_dynamo_item(locationParams);
-      console.info('🙂 -> file: index.js:126 -> module.exports.handler= -> locationResp:', locationResp);
-    }
+        sendResponse = await requester(options);
+        console.log("sendResponse", sendResponse);
+        const locationParams = {
+          TableName: P44_LOCATION_UPDATE_TABLE,
+          Key: {
+            HouseBillNo: { S: houseBill },
+            UTCTimeStamp: { S: utcTimestamp },
+          },
+          UpdateExpression: "SET #attr = :val, Payload = :payload, UpdatedAt = :updatedAt",
+          ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
+          ExpressionAttributeValues: {
+            ":val": { S: "Complete" },
+            ":payload": { S: JSON.stringify(p44Payload) },
+            ":updatedAt": {
+              S: moment
+                .tz("America/Chicago")
+                .format("YYYY:MM:DD HH:mm:ss")
+                .toString()
+            }
+          },
+        };
+        console.info('🙂 -> file: index.js:125 -> module.exports.handler= -> locationParams:', locationParams);
+        const locationResp = await update_dynamo_item(locationParams);
+        console.info('🙂 -> file: index.js:126 -> module.exports.handler= -> locationResp:', locationResp);
+        return 'SUCCESS'
+      } catch (error) {
+        console.error("Error", error);
+        const locationParams = {
+          TableName: P44_LOCATION_UPDATE_TABLE,
+          Key: {
+            HouseBillNo: { S: houseBill },
+            UTCTimeStamp: { S: utcTimestamp },
+          },
+          UpdateExpression: "SET #attr = :val, Payload = :payload, UpdatedAt = :updatedAt, Message = :message",
+          ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
+          ExpressionAttributeValues: {
+            ":val": { S: "Error" },
+            ":payload": { S: JSON.stringify(p44Payload) },
+            ":message": { S: JSON.stringify(error?.error) },
+            ":updatedAt": {
+              S: moment
+                .tz("America/Chicago")
+                .format("YYYY:MM:DD HH:mm:ss")
+                .toString()
+            }
+          },
+        };
+        console.info('🙂 -> file: index.js:125 -> module.exports.handler= -> locationParams:', locationParams);
+        const locationResp = await update_dynamo_item(locationParams);
+        console.info('🙂 -> file: index.js:126 -> module.exports.handler= -> locationResp:', locationResp);
+        return 'FAILED'
+      }
+    }));
     console.log("Response Send To P44 EndPoint");
     const sfDltParams = {
       TableName: P44_SF_STATUS_TABLE,
@@ -147,7 +183,7 @@ module.exports.handler = async (event, context, callback) => {
     };
     let sfDynamoPayload = {
       HouseBillNo: houseBill,
-      StepFunctionStatus: "Complete",
+      StepFunctionStatus: promiseResponses.includes('FAILED') ? 'Failed' : "Complete",
     };
     sfDynamoPayload = marshall(sfDynamoPayload);
     const sfParams = {
@@ -180,6 +216,11 @@ module.exports.handler = async (event, context, callback) => {
     console.info('🙂 -> file: index.js:140 -> module.exports.handler= -> sfDlt:', sfDlt);
     const sfResp = await put_dynamo(sfParams);
     console.info('🙂 -> file: index.js:142 -> module.exports.handler= -> sfResp:', sfResp);
+    const params = {
+      Message: `Error in ${context.functionName}, Error: ${error.message}`,
+      TopicArn: SNS_TOPIC_ARN,
+    };
+    await sns.publish(params).promise();
     return callback(response("[400]", "Second Lambda Failed"));
   }
 };

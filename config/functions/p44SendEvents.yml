@@ -27,3 +27,5 @@ function:
     SERVICE_NAME: ${self:service}
     APPLICATION: DataWarehouse
     P44_SF_STATUS_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
+    SNS_TOPIC_ARN: ${ssm:/omni-reports/${self:provider.stage}/error-notification/sns/arn}
+    REGION: ${self:provider.region}

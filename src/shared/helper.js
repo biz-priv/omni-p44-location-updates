@@ -29,7 +29,8 @@ async function requester(options) {
       resolve(data);
     } catch (err) {
       console.log("error", err);
-      reject({ error: err.message });
+      const message = err?.response?.data?.errors ?? err?.message;
+      reject({ error: message });
     }
   });
 }
