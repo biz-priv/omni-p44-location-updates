@@ -4,7 +4,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "offline": "sls offline start --stage dev"
   },
   "repository": {
     "type": "git",
@@ -22,7 +23,7 @@
   },
   "devDependencies": {
     "serverless": "2.72.3",
-    "serverless-offline": "^8.8.0",
+    "serverless-offline": "^8.8.1",
     "serverless-plugin-log-subscription": "^2.2.0",
     "serverless-step-functions": "^2.4.0"
   },
