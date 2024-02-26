@@ -113,3 +113,4 @@ doc
 lib/nodejs/yarn.lock
 lib/nodejs/package-lock.json
 doc.txt
+/test-events

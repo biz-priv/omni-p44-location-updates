@@ -8,7 +8,7 @@ provider:
   versionFunctions: true
   stage: ${opt:stage, 'dev'}
   region: us-east-1
-  timeout: 30
+  timeout: 500
   memorySize: 256
   deploymentBucket: ${ssm:/omni-dw/${self:provider.stage}/sls/deployment/bucket}
   iamRoleStatements:
@@ -79,7 +79,7 @@ functions:
   p44ProcessSfStatus: ${file(config/functions/p44ProcessSfStatus.yml):function}
   p44UpdatesHwbStatus: ${file(config/functions/p44UpdatesHwbStatus.yml):function}
   p44SendEvents: ${file(config/functions/p44SendEvents.yml):function}
-  locationUpdateComplete: ${file(config/functions/locationUpdateComplete.yml):function}
+  # locationUpdateComplete: ${file(config/functions/locationUpdateComplete.yml):function}
 
 stepFunctions:
   stateMachines:

@@ -4,17 +4,15 @@ const { log, logUtilization } = require("../shared/logger");
 const {
   put_dynamo,
   delete_dynamo_item,
-  update_dynamo_item,
-  query_dynamo,
+  update_dynamo_item
 } = require("../shared/dynamoDb");
+const moment = require("moment-timezone");
 
-const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE,P44_LOCATION_UPDATE_TABLE_INDEX } = process.env;
+const { P44_LOCATION_UPDATE_TABLE, P44_SF_STATUS_TABLE, P44_LOCATION_UPDATE_TABLE_INDEX } = process.env;
 
 //=============>
 const AWS = require("aws-sdk");
 var ddb = new AWS.DynamoDB.DocumentClient();
-let items;
-let queryResults = [];
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -37,6 +35,7 @@ module.exports.handler = async (event, context, callback) => {
       HouseBillNo: houseBill,
       StepFunctionStatus: "Pending",
     };
+    
     sfDynamoPayload = marshall(sfDynamoPayload);
 
     const sfParams = {
@@ -60,18 +59,18 @@ module.exports.handler = async (event, context, callback) => {
       ExpressionAttributeValues: {
         ":pk": locationStatus,
         ":val": houseBill,
-      },
-      limit: 100,
+      }
     };
     console.log("Location_Query_Params", params);
 
-    do {
-      items = await ddb.query(params).promise();
-      items.Items.forEach((item) => queryResults.push(item));
-      params.ExclusiveStartKey = items.LastEvaluatedKey;
-    } while (typeof items.LastEvaluatedKey != "undefined");
+    // do {
+    //   items = await ddb.query(params).promise();
+    //   items.Items.forEach((item) => queryResults.push(item));
+    //   params.ExclusiveStartKey = items.LastEvaluatedKey;
+    // } while (typeof items.LastEvaluatedKey != "undefined");
 
-    const locationData = queryResults;
+    let locationData = await dbReadWithLastEvaluatedKey(params);
+    locationData = locationData.Items
     console.log("locationData", JSON.stringify(locationData));
     //--------------------------------------------------------------------------------------------->
 
@@ -80,6 +79,7 @@ module.exports.handler = async (event, context, callback) => {
 
     // Update SF_Status---------------------------------------------------------------------------->
     const sfDlt = await delete_dynamo_item(sfDltParams);
+    console.info('🙂 -> file: index.js:82 -> module.exports.handler= -> sfDlt:', sfDlt);
     const sfResp = await put_dynamo(sfParams);
     console.log("Udated Successfully in P44_SF_STATUS_TABLE", sfResp);
 
@@ -98,12 +98,19 @@ module.exports.handler = async (event, context, callback) => {
             HouseBillNo: { S: houseBill },
             UTCTimeStamp: { S: utcTimeStamp },
           },
-          UpdateExpression: "SET #attr = :val",
+          UpdateExpression: "SET #attr = :val,  UpdatedAt = :updatedAt",
           ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
           ExpressionAttributeValues: {
             ":val": { S: "Pending" },
+            ":updatedAt": {
+              S: moment
+                .tz("America/Chicago")
+                .format("YYYY:MM:DD HH:mm:ss")
+                .toString()
+            }
           },
         };
+        console.info('🙂 -> file: index.js:107 -> module.exports.handler= -> locationParams:', locationParams);
         locationResp = await update_dynamo_item(locationParams);
       }
     }
@@ -122,3 +129,17 @@ module.exports.handler = async (event, context, callback) => {
     return callback(response("[400]", "First Lambda Failed"));
   }
 };
+
+async function dbReadWithLastEvaluatedKey(params) {
+  async function helper(params) {
+    let result = await ddb.query(params).promise();
+    let data = result.Items;
+    if (result.LastEvaluatedKey) {
+      params.ExclusiveStartKey = result.LastEvaluatedKey;
+      data = data.concat(await helper(params));
+    }
+    return data;
+  }
+  let readData = await helper(params);
+  return { Items: readData };
+}

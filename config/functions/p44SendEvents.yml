@@ -26,3 +26,4 @@ function:
     FUNCTION_NAME: omni-p44-send-events-${self:provider.stage}
     SERVICE_NAME: ${self:service}
     APPLICATION: DataWarehouse
+    P44_SF_STATUS_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}

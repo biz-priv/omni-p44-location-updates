@@ -2,7 +2,7 @@ const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo, put_dynamo } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
-const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE,SHIPMENT_HEADER_TABLE_INDEX } =
+const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE, SHIPMENT_HEADER_TABLE_INDEX } =
   process.env;
 
 module.exports.handler = async (event, context, callback) => {
@@ -13,8 +13,12 @@ module.exports.handler = async (event, context, callback) => {
   try {
     for (let i = 0; i < record.length; i++) {
       console.log("loopCount==>", i);
-      const houseBill = event.Records[i].dynamodb.NewImage.HouseBillNo.S;
-      const correlationId = event.Records[i].dynamodb.NewImage.CorrelationId.S;
+      const houseBill = event.Records[i].dynamodb.NewImage.HouseBillNo?.S;
+      const correlationId = event.Records[i].dynamodb.NewImage.CorrelationId?.S;
+      if (!houseBill || !correlationId) {
+        console.info("houseBill or correlationId is not present");
+        continue;
+      }
       await logUtilization(correlationId);
       log(correlationId, JSON.stringify(houseBill), 200);
 

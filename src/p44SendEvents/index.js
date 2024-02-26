@@ -1,6 +1,7 @@
 const { marshall } = require("@aws-sdk/util-dynamodb");
-const { query_dynamo } = require("../shared/dynamoDb");
+const { query_dynamo, delete_dynamo_item, put_dynamo, update_dynamo_item } = require("../shared/dynamoDb");
 const { response, requester, authToken } = require("../shared/helper");
+const moment = require("moment-timezone");
 const {
   P44_LOCATION_UPDATE_TABLE,
   P44_API_URL,
@@ -8,7 +9,8 @@ const {
   SHIPMENT_HEADER_TABLE,
   SHIPMENT_HEADER_TABLE_INDEX,
   REFERENCE_TABLE_INDEX,
-  P44_LOCATION_UPDATE_TABLE_INDEX
+  P44_LOCATION_UPDATE_TABLE_INDEX,
+  P44_SF_STATUS_TABLE
 } = process.env;
 const { log, logUtilization } = require("../shared/logger");
 
@@ -64,7 +66,7 @@ module.exports.handler = async (event, context, callback) => {
       KeyConditionExpression: "ShipmentStatus = :pk",
       FilterExpression: "HouseBillNo = :val",
       ExpressionAttributeValues: marshall({
-        ":pk": "Complete",
+        ":pk": "Pending",
         ":val": houseBill,
       }),
     };
@@ -75,10 +77,14 @@ module.exports.handler = async (event, context, callback) => {
     let sendResponse;
     for (let i = 0; i < locationData.Items.length; i++) {
       console.log("LoopCount", i);
-      const correlationId = locationData.Items[i].CorrelationId.S;
+      const correlationId = locationData.Items[i].CorrelationId?.S;
       await logUtilization(correlationId);
       log(correlationId, JSON.stringify(event), 200);
-
+      const utcTimestamp = locationData.Items[i].UTCTimeStamp?.S
+      if (!correlationId || !utcTimestamp) {
+        console.info("CorrelationId or UTCTimeStamp is missing in the P44_LOCATION_UPDATE_TABLE");
+        continue
+      }
       const p44Payload = {
         shipmentIdentifiers: [
           {
@@ -89,7 +95,7 @@ module.exports.handler = async (event, context, callback) => {
         latitude: locationData.Items[i].latitude.N,
         longitude: locationData.Items[i].longitude.N,
 
-        utcTimestamp: locationData.Items[i].UTCTimeStamp.S,
+        utcTimestamp,
         customerId: "MCKESSON",
         eventType: "POSITION",
       };
@@ -108,10 +114,72 @@ module.exports.handler = async (event, context, callback) => {
 
       sendResponse = await requester(options);
       console.log("sendResponse", sendResponse);
+      const locationParams = {
+        TableName: P44_LOCATION_UPDATE_TABLE,
+        Key: {
+          HouseBillNo: { S: houseBill },
+          UTCTimeStamp: { S: utcTimestamp },
+        },
+        UpdateExpression: "SET #attr = :val, Payload = :payload, UpdatedAt = :updatedAt",
+        ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
+        ExpressionAttributeValues: {
+          ":val": { S: "Complete" },
+          ":payload": { S: JSON.stringify(p44Payload) },
+          ":updatedAt": {
+            S: moment
+              .tz("America/Chicago")
+              .format("YYYY:MM:DD HH:mm:ss")
+              .toString()
+          }
+        },
+      };
+      console.info('🙂 -> file: index.js:125 -> module.exports.handler= -> locationParams:', locationParams);
+      const locationResp = await update_dynamo_item(locationParams);
+      console.info('🙂 -> file: index.js:126 -> module.exports.handler= -> locationResp:', locationResp);
     }
     console.log("Response Send To P44 EndPoint");
+    const sfDltParams = {
+      TableName: P44_SF_STATUS_TABLE,
+      Key: {
+        HouseBillNo: { S: houseBill },
+        StepFunctionStatus: { S: "Pending" },
+      },
+    };
+    let sfDynamoPayload = {
+      HouseBillNo: houseBill,
+      StepFunctionStatus: "Complete",
+    };
+    sfDynamoPayload = marshall(sfDynamoPayload);
+    const sfParams = {
+      TableName: P44_SF_STATUS_TABLE,
+      Item: sfDynamoPayload,
+    };
+    const sfDlt = await delete_dynamo_item(sfDltParams);
+    console.info('🙂 -> file: index.js:140 -> module.exports.handler= -> sfDlt:', sfDlt);
+    const sfResp = await put_dynamo(sfParams);
+    console.info('🙂 -> file: index.js:142 -> module.exports.handler= -> sfResp:', sfResp);
   } catch (error) {
     console.log("Error", error);
+    const sfDltParams = {
+      TableName: P44_SF_STATUS_TABLE,
+      Key: {
+        HouseBillNo: { S: houseBill },
+        StepFunctionStatus: { S: "Pending" },
+      },
+    };
+    let sfDynamoPayload = {
+      HouseBillNo: houseBill,
+      StepFunctionStatus: "Failed",
+    };
+    sfDynamoPayload = marshall(sfDynamoPayload);
+    const sfParams = {
+      TableName: P44_SF_STATUS_TABLE,
+      Item: sfDynamoPayload,
+    };
+    const sfDlt = await delete_dynamo_item(sfDltParams);
+    console.info('🙂 -> file: index.js:140 -> module.exports.handler= -> sfDlt:', sfDlt);
+    const sfResp = await put_dynamo(sfParams);
+    console.info('🙂 -> file: index.js:142 -> module.exports.handler= -> sfResp:', sfResp);
     return callback(response("[400]", "Second Lambda Failed"));
   }
 };
