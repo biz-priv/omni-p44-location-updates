@@ -27,6 +27,8 @@ function:
     P44_SF_STATUS_TABLE: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.table_name}
     LOCATION_UPDATE_SHIPMENT_STATUS_INDEX: ${ssm:/omni-p44/location-updates/${self:provider.stage}/stepFunction-status/ddb.stepFunctionStatus_index}
     CUSTOMER_MCKESSON: ${ssm:/omni-p44-rt-updates/${self:provider.stage}/mckesson-customer/numbers}
+    BIO_RAD_BILL_TO_NUMBERS: ${ssm:/omni/${self:provider.stage}/bio-rad/bill-to/numbers}
+    BIO_RAD_SQS_URL: ${ssm:/omni/${self:provider.stage}/bio-rad/send-order-events/sqs.url}
     FUNCTION_NAME: omni-p44-process-dynamo-streams-${self:provider.stage}
     SERVICE_NAME: ${self:service}
     APPLICATION: DataWarehouse
