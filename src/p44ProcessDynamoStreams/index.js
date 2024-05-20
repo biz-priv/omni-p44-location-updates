@@ -97,8 +97,8 @@ module.exports.handler = async (event, context, callback) => {
                 UpdateExpression: "SET #attr = :val, UpdatedAt = :updatedAt, Message = :message",
                 ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
                 ExpressionAttributeValues: {
-                  ":val": { S: "Skipped" },
-                  ":message": { S: `${billNumber} is not one of ${customerIds}` },
+                  ":val": { S: "SUCCESS" },
+                  ":message": { S: `SENT TO SNS` },
                   ":updatedAt": {
                     S: moment
                       .tz("America/Chicago")
