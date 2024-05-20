@@ -3,10 +3,10 @@ const { query_dynamo, put_dynamo, update_dynamo_item } = require("../shared/dyna
 const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
 const moment = require("moment-timezone");
-const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE, SHIPMENT_HEADER_TABLE_INDEX, P44_LOCATION_UPDATE_TABLE, BIO_RAD_BILL_TO_NUMBERS, BIO_RAD_SQS_URL } =
+const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE, SHIPMENT_HEADER_TABLE_INDEX, P44_LOCATION_UPDATE_TABLE, BIO_RAD_BILL_TO_NUMBERS, SHIPMENT_LOCATION_UPDATES_SNS } =
   process.env;
 const AWS = require('aws-sdk');
-const sqs = new AWS.SQS();
+const sns = new AWS.SNS();
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -68,18 +68,26 @@ module.exports.handler = async (event, context, callback) => {
 
               const res = await put_dynamo(dynamoParams);
               // console.log("response", res);
-            }else if (bioRadCustomerIds.includes(billNumber)) {
-
-              console.info('bioRadCustomerIds: ', bioRadCustomerIds)
-              console.info("billNumber: ", billNumber);
-              const sqsParams = {
-                MessageBody: JSON.stringify(record),
-                QueueUrl: BIO_RAD_SQS_URL,
-              };
-              console.info(sqsParams)
-              await sqs.sendMessage(sqsParams).promise();
-
+              
             } else {
+
+              const params = {
+                Message: JSON.stringify({
+                  default: "No data",
+                  sqs: JSON.stringify(record),
+                }),
+                MessageStructure: "json",
+                TopicArn: SHIPMENT_LOCATION_UPDATES_SNS,
+                MessageAttributes: {
+                  BillNo: {
+                    DataType: "String",
+                    StringValue: billNumber,
+                  },
+                },
+              };
+              console.info("params: ", params);
+              await sns.publish(params).promise();
+
               const locationParams = {
                 TableName: P44_LOCATION_UPDATE_TABLE,
                 Key: {
