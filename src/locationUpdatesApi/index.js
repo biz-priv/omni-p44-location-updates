@@ -1,3 +1,10 @@
+/*
+* File: src\locationUpdatesApi\index.js
+* Project: Omni-p44-location-updates
+* Author: Bizcloud Experts
+* Date: 2023-05-23
+* Confidential and Proprietary
+*/
 const { send_message, response } = require("../shared/helper");
 const { locationUpdateSchema } = require("../shared/joiSchema");
 const { log, logUtilization } = require("../shared/logger");
