@@ -1,3 +1,10 @@
+/*
+* File: src\locationUpdateComplete\index.js
+* Project: Omni-p44-location-updates
+* Author: Bizcloud Experts
+* Date: 2023-08-03
+* Confidential and Proprietary
+*/
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const { response } = require("../shared/helper");
 const { log, logUtilization } = require("../shared/logger");

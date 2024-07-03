@@ -4,6 +4,8 @@ function:
   handler: src/p44ProcessSfStatus/index.handler
   description: P44 Process From SF DynamoDB Streams - ${self:provider.stage}
   runtime: nodejs14.x
+  tags:
+    Name: process-ddb-sf-status
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:

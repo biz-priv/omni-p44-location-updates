@@ -1,3 +1,10 @@
+/*
+* File: src\p44ProcessSfStatus\index.js
+* Project: Omni-p44-location-updates
+* Author: Bizcloud Experts
+* Date: 2023-08-03
+* Confidential and Proprietary
+*/
 const AWS = require("aws-sdk");
 const stepfunctions = new AWS.StepFunctions();
 const { STEP_FUNCTION_ARN } = process.env;

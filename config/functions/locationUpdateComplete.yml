@@ -4,6 +4,8 @@ function:
   handler: src/locationUpdateComplete/index.handler
   description: Update Pending status to Complete - ${self:provider.stage}
   runtime: nodejs14.x
+  tags:
+    Name: update-complete
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:

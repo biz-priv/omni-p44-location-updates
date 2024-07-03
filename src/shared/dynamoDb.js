@@ -1,3 +1,10 @@
+/*
+* File: src\shared\dynamoDb.js
+* Project: Omni-p44-location-updates
+* Author: Bizcloud Experts
+* Date: 2023-08-04
+* Confidential and Proprietary
+*/
 const {
   DynamoDBClient,
   ListTablesCommand,

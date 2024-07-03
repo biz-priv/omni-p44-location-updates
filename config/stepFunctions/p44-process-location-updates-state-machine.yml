@@ -1,6 +1,8 @@
 ---
 stateMachine:
   name: omni-p44-process-location-updates-${self:provider.stage}
+  tags:
+    Name: location-updates-stepfunction
   definition:
     Comment: "Step function to process location updates"
     StartAt: PublishEvents
