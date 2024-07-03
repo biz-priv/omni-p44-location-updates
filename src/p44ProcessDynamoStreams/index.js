@@ -1,3 +1,10 @@
+/*
+* File: src\p44ProcessDynamoStreams\index.js
+* Project: Omni-p44-location-updates
+* Author: Bizcloud Experts
+* Date: 2024-02-27
+* Confidential and Proprietary
+*/
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo, put_dynamo, update_dynamo_item } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");

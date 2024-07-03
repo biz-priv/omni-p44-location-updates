@@ -1,3 +1,10 @@
+/*
+* File: src\shared\helper.js
+* Project: Omni-p44-location-updates
+* Author: Bizcloud Experts
+* Date: 2024-02-27
+* Confidential and Proprietary
+*/
 const AWS = require("aws-sdk");
 const sqs = new AWS.SQS();
 const axios = require("axios");
