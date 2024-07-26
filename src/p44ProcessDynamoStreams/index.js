@@ -10,7 +10,7 @@ const { query_dynamo, put_dynamo, update_dynamo_item } = require("../shared/dyna
 const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
 const moment = require("moment-timezone");
-const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE, SHIPMENT_HEADER_TABLE_INDEX, P44_LOCATION_UPDATE_TABLE, BIO_RAD_BILL_TO_NUMBERS, SHIPMENT_LOCATION_UPDATES_SNS } =
+const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE, SHIPMENT_HEADER_TABLE_INDEX, P44_LOCATION_UPDATE_TABLE, SHIPMENT_LOCATION_UPDATES_SNS } =
   process.env;
 const AWS = require('aws-sdk');
 const sns = new AWS.SNS();
@@ -18,8 +18,6 @@ const sns = new AWS.SNS();
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
   const customerIds = CUSTOMER_MCKESSON.split(",");
-  const bioRadCustomerIds = BIO_RAD_BILL_TO_NUMBERS.split(",");
-  console.info('bioRadCustomerIds: ', bioRadCustomerIds)
   const record = event.Records;
 
   try {

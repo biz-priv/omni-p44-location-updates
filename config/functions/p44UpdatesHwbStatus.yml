@@ -7,7 +7,7 @@ function:
   memorySize: 2048
   timeout: 900
   tags:
-    Name: hwb-status
+    Name: omni-p44-update-hwb-status-${self:provider.stage}
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:
