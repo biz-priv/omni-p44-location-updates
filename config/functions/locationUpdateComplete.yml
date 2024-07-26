@@ -5,7 +5,7 @@ function:
   description: Update Pending status to Complete - ${self:provider.stage}
   runtime: nodejs14.x
   tags:
-    Name: update-complete
+    Name: omni-p44-location-update-complete-${self:provider.stage}
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:

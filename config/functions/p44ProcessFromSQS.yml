@@ -5,7 +5,7 @@ function:
   description: P44 Process From SQS - ${self:provider.stage}
   runtime: nodejs14.x
   tags:
-    Name: process-from-sqs
+    Name: omni-p44-process-from-sqs-${self:provider.stage}
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:

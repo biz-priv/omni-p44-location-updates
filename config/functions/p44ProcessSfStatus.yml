@@ -5,7 +5,7 @@ function:
   description: P44 Process From SF DynamoDB Streams - ${self:provider.stage}
   runtime: nodejs14.x
   tags:
-    Name: process-ddb-sf-status
+    Name: omni-p44-process-ddb-sf-status-${self:provider.stage}
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:
