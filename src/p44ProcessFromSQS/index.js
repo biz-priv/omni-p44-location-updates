@@ -1,3 +1,10 @@
+/*
+* File: src\p44ProcessFromSQS\index.js
+* Project: Omni-p44-location-updates
+* Author: Bizcloud Experts
+* Date: 2023-05-22
+* Confidential and Proprietary
+*/
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const AWS = require("aws-sdk");
 const sqs = new AWS.SQS();

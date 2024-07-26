@@ -1,3 +1,10 @@
+/*
+* File: src\shared\joiSchema.js
+* Project: Omni-p44-location-updates
+* Author: Bizcloud Experts
+* Date: 2023-05-05
+* Confidential and Proprietary
+*/
 const Joi = require("joi");
 
 const locationSchema = Joi.object({

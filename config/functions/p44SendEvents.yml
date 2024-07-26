@@ -6,6 +6,8 @@ function:
   runtime: nodejs14.x
   memorySize: 2048
   timeout: 900
+  tags:
+    Name: omni-p44-send-events-${self:provider.stage}
   layers:
     - { Ref: CommonLibsLambdaLayer }
   package:

@@ -1,10 +1,19 @@
+/*
+* File: src\p44ProcessDynamoStreams\index.js
+* Project: Omni-p44-location-updates
+* Author: Bizcloud Experts
+* Date: 2024-02-27
+* Confidential and Proprietary
+*/
 const { marshall } = require("@aws-sdk/util-dynamodb");
 const { query_dynamo, put_dynamo, update_dynamo_item } = require("../shared/dynamoDb");
 const { log, logUtilization } = require("../shared/logger");
 const { response } = require("../shared/helper");
 const moment = require("moment-timezone");
-const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE, SHIPMENT_HEADER_TABLE_INDEX, P44_LOCATION_UPDATE_TABLE } =
+const { CUSTOMER_MCKESSON, SHIPMENT_HEADER_TABLE, P44_SF_STATUS_TABLE, SHIPMENT_HEADER_TABLE_INDEX, P44_LOCATION_UPDATE_TABLE, SHIPMENT_LOCATION_UPDATES_SNS } =
   process.env;
+const AWS = require('aws-sdk');
+const sns = new AWS.SNS();
 
 module.exports.handler = async (event, context, callback) => {
   console.log("event", JSON.stringify(event));
@@ -64,7 +73,26 @@ module.exports.handler = async (event, context, callback) => {
 
               const res = await put_dynamo(dynamoParams);
               // console.log("response", res);
+              
             } else {
+
+              const params = {
+                Message: JSON.stringify({
+                  default: "No data",
+                  sqs: JSON.stringify(record),
+                }),
+                MessageStructure: "json",
+                TopicArn: SHIPMENT_LOCATION_UPDATES_SNS,
+                MessageAttributes: {
+                  BillNo: {
+                    DataType: "String",
+                    StringValue: billNumber,
+                  },
+                },
+              };
+              console.info("params: ", params);
+              await sns.publish(params).promise();
+
               const locationParams = {
                 TableName: P44_LOCATION_UPDATE_TABLE,
                 Key: {
@@ -74,8 +102,8 @@ module.exports.handler = async (event, context, callback) => {
                 UpdateExpression: "SET #attr = :val, UpdatedAt = :updatedAt, Message = :message",
                 ExpressionAttributeNames: { "#attr": "ShipmentStatus" },
                 ExpressionAttributeValues: {
-                  ":val": { S: "Skipped" },
-                  ":message": { S: `${billNumber} is not one of ${customerIds}` },
+                  ":val": { S: "SUCCESS" },
+                  ":message": { S: `SENT TO SNS` },
                   ":updatedAt": {
                     S: moment
                       .tz("America/Chicago")
