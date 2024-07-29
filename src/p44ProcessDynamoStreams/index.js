@@ -56,7 +56,8 @@ module.exports.handler = async (event, context, callback) => {
 
             console.log("billNumber", billNumber);
             console.log("customerIds", customerIds);
-            if (customerIds.includes(billNumber)) {
+            const fkServicelevelId = shipmetData?.Items[0]?.FK_ServiceLevelId?.S
+            if (customerIds.includes(billNumber) && ["HS", "FT"].includes(fkServicelevelId)) {
               console.log("billNumber", billNumber);
               let dynamoPayload = {
                 HouseBillNo: houseBill,
@@ -70,9 +71,7 @@ module.exports.handler = async (event, context, callback) => {
               };
 
               console.log("dynamoParams", JSON.stringify(dynamoParams));
-
-              const res = await put_dynamo(dynamoParams);
-              // console.log("response", res);
+              await put_dynamo(dynamoParams);
               
             } else {
 
@@ -140,16 +139,12 @@ module.exports.handler = async (event, context, callback) => {
             console.info('🙂 -> file: index.js:125 -> module.exports.handler= -> locationParams:', locationParams);
             const locationResp = await update_dynamo_item(locationParams);
             console.info('🙂 -> file: index.js:126 -> module.exports.handler= -> locationResp:', locationResp);
-            // throw "Ignored response";
           }
         } catch (error) {
           console.error(error);
-          // return callback(response("[400]", "Failed"));
-          // throw "Not an Insert Event";
         }
       } else {
-        // throw "Not an Insert Event";
-        console.log("Ignored response");
+        console.info("Ignored response");
       }
     }));
   } catch (error) {
